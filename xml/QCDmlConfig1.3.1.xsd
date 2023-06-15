@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- QCDml revision 1.3.1 (2010/01/17, D.P.) -->
+<xs:schema xmlns="http://www.lqcd.org/ildg/QCDml/config1.3" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.lqcd.org/ildg/QCDml/config1.3" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="arrayType">
+		<xs:annotation>
+			<xs:documentation>SciDAC array definition</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="elem" type="xs:anySimpleType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="gaugeConfiguration">
+		<xs:annotation>
+			<xs:documentation>The root of QCDML</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="management"/>
+				<xs:element ref="implementation"/>
+				<xs:element name="algorithm">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="parameters" type="parameterType" minOccurs="0"/>
+							<xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="precision" type="precisionType"/>
+				<xs:element ref="markovStep"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="array" type="arrayType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>The SciDAC array definition</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="markovStep">
+		<xs:annotation>
+			<xs:documentation>Also known as configuration XML. Contains the markovStep</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="markovChainURI"/>
+				<xs:element name="series" type="xs:token"/>
+				<xs:element name="update" type="xs:anySimpleType"/>
+				<xs:element name="avePlaquette" type="xs:double">
+					<xs:annotation>
+						<xs:documentation>The value of the average plaquette on this configuration</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="dataLFN"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="dataLFN" type="xs:anyURI">
+		<xs:annotation>
+			<xs:documentation>The Logical file name on the grid of the data file itself</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="markovChainURI" type="xs:anyURI">
+		<xs:annotation>
+			<xs:documentation>The URI of the ensemble to which this configuration belongs</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="management" type="managementType">
+		<xs:annotation>
+			<xs:documentation>Contains information on when and by whom the data was produced as well as possible use conitions</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="implementation" type="implementationType">
+		<xs:annotation>
+			<xs:documentation>Contains information on how the data was produced, i.e. code, machine etc</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="precisionType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of precision types, single(32 bit) or double (64 bit)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="single"/>
+			<xs:enumeration value="double"/>
+			<xs:enumeration value="mixed"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="managementActionType">
+		<xs:annotation>
+			<xs:documentation>Management action such as generate data, add to the catalogue, withdraw from the catalogue. generate is the zeroeth revision, as add has to be number 1. One can generate data without submitting to ILDG</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="revision" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="revisionAction" type="revisionActionType"/>
+			<xs:element name="participant">
+				<xs:annotation>
+					<xs:documentation>Who made this revision</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="xs:string"/>
+						<xs:element name="institution" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="date" type="xs:dateTime"/>
+			<xs:element name="comment" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="managementType">
+		<xs:annotation>
+			<xs:documentation>Contains the management information</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="revisions" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="reference" type="xs:string" minOccurs="0"/>
+			<xs:element name="crcCheckSum" type="xs:NMTOKEN"/>
+			<xs:element name="archiveHistory">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="elem" type="managementActionType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="implementationType">
+		<xs:sequence>
+			<xs:element name="machine">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="xs:string"/>
+						<xs:element name="institution" type="xs:string"/>
+						<xs:element name="machineType" type="xs:string"/>
+						<xs:element name="comment" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="code">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="xs:string"/>
+						<xs:element name="version" type="xs:string"/>
+						<xs:element name="date" type="xs:dateTime"/>
+						<xs:element name="comment" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="revisionActionType">
+		<xs:annotation>
+			<xs:documentation>An enumeration of revision actions</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="generate">
+				<xs:annotation>
+					<xs:documentation>generate new configuration</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="add">
+				<xs:annotation>
+					<xs:documentation>add new configuration to ILDG</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="replace">
+				<xs:annotation>
+					<xs:documentation>replace configuration metadata or binary</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="remove">
+				<xs:annotation>
+					<xs:documentation>remove configuration</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="parameterType">
+		<xs:annotation>
+			<xs:documentation>Contains a name and a value</xs:documentation>
+		</xs:annotation>
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="name" type="xs:Name"/>
+			<xs:element name="value" type="xs:anySimpleType"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config1.3">
+  <management>
+    <revisions>2</revisions>
+    <reference>myreference</reference>
+    <crcCheckSum>12ec367d</crcCheckSum>
+    <archiveHistory>
+      <elem>
+        <revision>0</revision>
+        <revisionAction>generate</revisionAction>
+        <participant>
+          <name>Dr. Strangelove</name>
+          <institution>Bielefeld University</institution>
+        </participant>
+        <date>2022-08-21T00:00:00+00:00</date>
+        <comment>myrevision</comment>
+      </elem>
+      <elem>
+        <revision>1</revision>
+        <revisionAction>add</revisionAction>
+        <participant>
+          <name>Merkin Muffley</name>
+          <institution>Brookhaven National Laboratory</institution>
+        </participant>
+        <date>2023-06-15T17:18:07-06:00</date>
+        <comment>myrevision</comment>
+      </elem>
+    </archiveHistory>
+  </management>
+  <implementation>
+    <machine>
+      <name>Summit</name>
+      <institution>Oakridge National Laboratory</institution>
+      <machineType>IBM</machineType>
+      <comment>mymachine</comment>
+    </machine>
+    <code>
+      <name>SIMULATeQCD</name>
+      <version>0.1</version>
+      <date>2022-01-21T00:00:00+00:00</date>
+      <comment>mycode</comment>
+    </code>
+  </implementation>
+  <algorithm>
+    <parameters>
+      <name>A</name><value>1</value>
+      <name>B</name><value>2</value>
+      <name>C</name><value>3</value>
+    </parameters>
+  </algorithm>
+  <precision>single</precision>
+  <markovStep>
+    <markovChainURI>mc://ldg/HotQCD/f21_chiral/l408f21b6260m002025m0810</markovChainURI>
+    <series>0</series>
+    <update>400</update>
+    <avePlaquette>1.0</avePlaquette>
+    <dataLFN>mc://ldg/HotQCD/f21_chiral/l408f21b6260m002025m0810/l408f21b6260m002025m0810a_0.400</dataLFN>
+  </markovStep>
+</gaugeConfiguration>
