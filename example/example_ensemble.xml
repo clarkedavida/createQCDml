@@ -62,12 +62,12 @@
           <quarkField>
             <normalisation>DoNotKnowYet</normalisation>
             <boundaryCondition>
-              <elem>periodic</elem>
               <elem>antiperiodic</elem>
+              <elem>periodic</elem>
             </boundaryCondition>
           </quarkField>
-          <numberOfFlavours>2</numberOfFlavours>
-          <mass>0.002025</mass>
+          <numberOfFlavours>1</numberOfFlavours>
+          <mass>0.081</mass>
           <LinkTreatment>
             <fat7QuarkLinkTreatment>
               <glossary>http://www.lqcd.org/ildg/actionGlossaries/fat7QuarkLinkTreatment.pdf</glossary>
@@ -97,12 +97,12 @@
           <quarkField>
             <normalisation>DoNotKnowYet</normalisation>
             <boundaryCondition>
-              <elem>periodic</elem>
               <elem>antiperiodic</elem>
+              <elem>periodic</elem>
             </boundaryCondition>
           </quarkField>
-          <numberOfFlavours>1</numberOfFlavours>
-          <mass>0.081</mass>
+          <numberOfFlavours>2</numberOfFlavours>
+          <mass>0.002025</mass>
           <LinkTreatment>
             <fat7QuarkLinkTreatment>
               <glossary>http://www.lqcd.org/ildg/actionGlossaries/fat7QuarkLinkTreatment.pdf</glossary>

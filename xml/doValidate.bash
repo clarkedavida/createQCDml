@@ -1,4 +1,12 @@
 #!/bin/bash
+# 
+# doValidate.bash                                                               
+# 
+# D. Clarke
+# 
+# This script shows how to validate an xml file. This is mostly for people
+# like me who have trouble remembering Bash commands. 
+# 
 
 function _checkExtension {
   case $1 in *.$2) return 1;; esac
@@ -19,4 +27,5 @@ if [ ! $? -eq 1 ]; then usage; fi
 _checkExtension $xmldoc xml
 if [ ! $? -eq 1 ]; then usage; fi
 
+# This is the only important line
 xmllint --schema $schema $xmldoc --noout

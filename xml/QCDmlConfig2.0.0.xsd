@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.lqcd.org/ildg/QCDml/config2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.lqcd.org/ildg/QCDml/config2.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="gaugeConfiguration">
+    <xs:annotation>
+      <xs:documentation>The root element of QCDmlConfig documents, also know as "config XML". It represents the metadata for a data file containing one or more gauge configurations.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="dataLFN" type="xs:anyURI">
+         <xs:annotation>
+          <xs:documentation>The Logical file name is the persistent ILDG-wide unique identifier of the metadata AND of data file itself.</xs:documentation>
+         </xs:annotation>
+        </xs:element>
+        <xs:element name="management" type="managementType"/>
+        <xs:element name="implementation" type="implementationType"/>
+        <xs:element name="algorithm">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+              <xs:element name="parameters" type="parametersType" minOccurs="0"/>
+              <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="precision" type="precisionType"/>
+        <xs:element name="markovSequence" type="markovSequenceType"/>
+        <xs:element name="additionalInfo" type="additionalInfoType" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- management -->
+  <xs:complexType name="managementType">
+    <xs:annotation>
+      <xs:documentation>Management information: when and by whom the data was produced (use conitions and license apply as specified in the ensemble XML of the corresponding markovChainURI!)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+      <xs:element name="revisions" type="xs:nonNegativeInteger" minOccurs="0"/>
+      <xs:element name="reference" type="xs:string" minOccurs="0"/>
+      <xs:element name="archiveHistory">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="archiveEvent" type="managementActionType" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="managementActionType">
+    <xs:annotation>
+      <xs:documentation>Management action such as generate data, add to the catalogue, withdraw from the catalogue. generate is the zeroeth revision, as add has to be number 1. One can generate data without submitting to ILDG</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+      <xs:element name="revision" type="xs:nonNegativeInteger" minOccurs="0"/>
+      <xs:element name="revisionAction" type="revisionActionType"/>
+      <xs:element name="participant" type="participantType"/>
+      <xs:element name="date" type="xs:dateTime"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- management/archiveHistory/archiveEvent/revisionAction -->
+  <xs:simpleType name="revisionActionType">
+    <xs:annotation>
+      <xs:documentation>Enumeration of revision actions</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:enumeration value="generate">
+        <xs:annotation>
+          <xs:documentation>generate new configuration</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="add">
+        <xs:annotation>
+          <xs:documentation>add new configuration to ILDG</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="replace">
+        <xs:annotation>
+          <xs:documentation>replace configuration metadata or binary</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="remove">
+        <xs:annotation>
+          <xs:documentation>remove configuration</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- management/participant -->
+  <xs:complexType name="participantType">
+    <xs:annotation>
+      <xs:documentation>Who made this revision</xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:sequence>
+        <xs:annotation>
+          <xs:documentation>ORCID + optional name and/or institution</xs:documentation>
+        </xs:annotation>
+        <xs:element name="orcid" type="orcidType"/>
+        <xs:element name="name" type="xs:string" minOccurs="0"/>
+        <xs:element name="institution" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:annotation>
+          <xs:documentation>No ORCID and mandatory name and institution</xs:documentation>
+        </xs:annotation>
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="institution" type="xs:string"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+  <xs:simpleType name="orcidType">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="\d\d\d\d\-\d\d\d\d\-\d\d\d\d\-\d\d\d\d"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- implementation -->
+  <xs:complexType name="implementationType">
+    <xs:annotation>
+      <xs:documentation>Information on how the data was produced, i.e. code, machine etc</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+      <xs:element name="machine">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+            <xs:element name="name" type="nonEmptyString"/>
+            <xs:element name="institution" type="nonEmptyString"/>
+            <xs:element name="machineType" type="nonEmptyString"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="code">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="version" type="xs:string"/>
+            <xs:element name="date" type="xs:dateTime"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- algorithm/parameters -->
+  <xs:complexType name="parametersType">
+    <xs:annotation>
+      <xs:documentation>List of parameter elements (possibly empty, but must include all relevant parameters if reweightingNeeded is true!)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="parameter" type="parameterType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="parameterType">
+    <xs:annotation>
+      <xs:documentation>Contains an optional annotation, a name and a value</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+      <xs:element name="name" type="xs:Name"/>
+      <xs:element name="value" type="xs:anySimpleType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- markovSequence -->
+  <xs:complexType name="markovSequenceType">
+    <xs:annotation>
+      <xs:documentation>One or more configs, which belong to the same Markov Chain (and series) and are stored in a single ILDG binary file with unique dataLFN</xs:documentation>
+    </xs:annotation>
+      <xs:sequence>
+        <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+        <xs:element name="markovChainURI" type="xs:anyURI">
+         <xs:annotation>
+          <xs:documentation>The URI of the ensemble to which this configuration belongs</xs:documentation>
+         </xs:annotation>
+        </xs:element>
+        <xs:element name="series" type="xs:token"/>
+        <xs:element name="markovStep" type="markovStepType" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+
+
+  <!-- markovStepe -->
+  <xs:complexType name="markovStepType">
+    <xs:annotation>
+      <xs:documentation>A single configuration (analogous to markovStep in QCDmlEnsemble version 1.x.y, but without LFN and series, and with CRC).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="annotation" type="xs:string" minOccurs="0"/>
+      <xs:element name="update" type="xs:anySimpleType">
+        <xs:annotation>
+          <xs:documentation>
+          The value of this element counts the number of Monte Carlo updates (e.g. trajectories in case of HMC) which have been performed within the Markov Chain to produce the configuration (NOT the number of configurations that have actually been stored). Thus it must be incremented by N, if configurations are stored only after every N-th update.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="record" type="recordType" maxOccurs="unbounded"/>      
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="recordType">
+    <xs:annotation>
+      <xs:documentation>"field", "avePlaquette", and "crcChecksum" for each ildg-binary-data record if the binary file</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="field" type="fieldType">
+      </xs:element>
+      <xs:element name="crcCheckSum" type="xs:NMTOKEN">
+        <xs:annotation>
+          <xs:documentation>The ILDG checksum uses the same CRC algorithm as https://www.gnu.org/software/coreutils/cksum and is computed ONLY on the data payload (including possibly "unphysical" links forced to a specified value), i.e. the content of the ildg-binary-data record in case of LIME packaging.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="avePlaquette" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>The value of avePlaquette is computed as the sum of all "physical" plaquettes (irrespective of the weight they have in the gauge action), divided by Ncolor times the number of these plaquettes (i.e., avePlaquette=1 for a trivial gauge field). A plaquette is considered "physical" if it has only links which lie in the boundary (if any) or interior of the physical lattice (and thus are guaranteed to have a value in the gauge group).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="fieldType">
+    <xs:annotation>
+      <xs:documentation>Enumeration of field types (same as "field" element in ildg-format record of binary file)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:pattern value="s[ou][2-9]gauge([#_][a-zA-Z0-9]+)?"/>
+      <xs:pattern value="s[ou][1-9][0-9]+gauge"/>
+      <xs:pattern value="sp[468]gauge"/>
+      <xs:pattern value="sp[1-9][0-9]*[02468]gauge"/>
+      <xs:pattern value="u1phase"/>
+      <xs:pattern value="u[1-9][0-9]*gauge"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="precisionType">
+    <xs:annotation>
+      <xs:documentation>Enumeration of precision types, single(32 bit) or double (64 bit)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:NMTOKEN">
+      <xs:enumeration value="single"/>
+      <xs:enumeration value="double"/>
+      <xs:enumeration value="mixed"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Free sub-tree -->
+  <xs:complexType name="additionalInfoType">
+    <xs:annotation>
+      <xs:documentation>If an "additionalInfo" element is present, it must have at least on child element, which can be an "annotation" (without name-space) or any custom element with an "other" name-space</xs:documentation>
+    </xs:annotation>
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="annotation" type="xs:string"/>
+        <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:any namespace="##other" minOccurs="1" maxOccurs="unbounded" processContents="lax"/>
+      </xs:sequence>
+    </xs:choice>
+  </xs:complexType>
+</xs:schema>
+
+

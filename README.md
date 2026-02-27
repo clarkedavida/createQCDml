@@ -35,8 +35,8 @@ To see whether everything worked, you can then try
 
 ## What can I do with these tools?
 
-Start by filling out a profile. Some examples can be found in the `profiles` subfolder.
-An excerpt from one is:
+Start by filling out a skeleton. Some examples can be found in the `example` subfolder.
+An excerpt from `example/confInfo.py` is:
 ```Python
 QCDmlConfigFileName = "example_config.xml"
 reference           = "myreference"
@@ -48,7 +48,7 @@ revisionDate        = ["2022-08-21T00:00:00+00:00",shell("hubert-mtime.pl")]
 revisionComment     = "myrevision"
 revisions           = len(revisionNumber)
 ```
-The profiles have a lot of nice features, namely:
+These skeletons have a lot of nice features, namely:
 1. You have an idea of what information is required from the variable names on the LHS.
 2. You can leverage Python data structures and commands, like lists and `len`, and can
 do on-the-fly math, such as setting `c7Link=1/384`, where the RHS will be converted to
@@ -57,7 +57,7 @@ float by Python.
 care for Python, by wrapping in the `shell` command. In the above example, we use a Perl script
 by H. Simma to compute the time.
 
-Once you have filled out your profiles, you can write a Python script to create, and if you like check,
+Once you have filled out your skeletons, you can write a Python script to create, and if you like check,
 the XML files. For instance:
 ```Python
 # Some basic checks that the supplied data are reasonable.
@@ -73,3 +73,9 @@ writeQCDmlEnsembleFile( ensmInfo, gActInfo, qActInfo )
 writeQCDmlConfigFile( confInfo, dataLFN=LFN, markovChainURI=URI )
 ```
 That's it, you're done! The full example is in `exampleQCDmlUtilScript.py`.
+
+## Explanation of file tree
+
+- `example`: Contains examples how to use this code.
+- `profile`: Contains some profiles specific to particular actions.
+- `xml`: Contains QCDml2.0 schemata along with a small script for validation.
