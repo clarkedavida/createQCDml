@@ -10,14 +10,16 @@ from QCDmlUtils import makeConfURI
 # This will be the output XML name. 
 QCDmlEnsembleFileName = "example_ensemble.xml"
 
-size = { "X" : 40,
-         "Y" : 40,
-         "Z" : 40,
-         "T" : 8  }
+size = { "x" : 40,
+         "y" : 40,
+         "z" : 40,
+         "t" : 8  }
 
 gaugeGroup          = "SU(3)"
 gaugeRepresentation = "fundamental"
-gaugeBCs            = [ "periodic", "periodic", "periodic", "periodic" ]
+gaugeBCs            = { "x" : "periodic", "y" : "periodic", "z" : "periodic", "t" : "periodic" }
+
+license             = "https://creativecommons.org/licenses/by/4.0/"
 
 quarks = {"l", "s"}
 

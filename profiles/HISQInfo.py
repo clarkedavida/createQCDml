@@ -10,11 +10,11 @@ actionType = 'hisqQuarkAction'
 
 quarkNormalization = 'DoNotKnowYet'
 
-# [periodic, antiperiodic, dirichlet]
-quarkBCs = { 'periodic',
-             'periodic',
-             'periodic',
-             'antiperiodic' }
+# [periodic, antiperiodic, dirichlet, cstar, open, openSF]
+quarkBCs = { "x" : "periodic",
+             "y" : "periodic",
+             "z" : "periodic",
+             "t" : "antiperiodic" }
 fat7QuarkLinks = { 'c1Link'      : 1/8,
                    'c3Link'      : 1/16,
                    'c5LinkChair' : 1/64,

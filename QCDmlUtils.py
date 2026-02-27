@@ -182,8 +182,8 @@ def checkEnsembleProfile(p):
     if not p.QCDmlEnsembleFileName.endswith('.xml'):
         lcheck *= QCDmlError("QCDml ensemble name must end with xml.")
     
-    for BC in p.gaugeBCs:
-        if not BC in ["periodic","antiperiodic","dirichlet"]:
+    for BC in p.gaugeBCs.values():
+        if not BC in ["periodic","antiperiodic","dirichlet","cstar","open","openSF"]:
             lcheck *= QCDmlError("Gauge BC",BC,"not allowed!")
 
     if len(p.size)!=4:

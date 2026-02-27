@@ -1,10 +1,10 @@
-# 
-# QCDmlWrite.py 
-# 
-# D. Clarke 
-# 
-# Methods for writing QCDml metadata files. 
-# 
+#
+# QCDmlWrite.py
+#
+# D. Clarke
+#
+# Methods for writing QCDml metadata files.
+#
 
 
 from QCDmlUtils import xmlWrite
@@ -28,21 +28,9 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
     except AttributeError:
         reference=None
     try:
-        revisionComment=p.revisionComment
-    except AttributeError:
-        revisionComment=None
-    try:
         revisionNumber=p.revisionNumber
     except AttributeError:
         revisionNumber=None
-    try:
-        machineComment=p.machineComment
-    except AttributeError:
-        machineComment=None
-    try:
-        codeComment=p.codeComment
-    except AttributeError:
-        codeComment=None
     try:
         parameterName=p.parameterName
     except AttributeError:
@@ -51,19 +39,25 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
         parameterValue=p.parameterValue
     except AttributeError:
         parameterValue=None
-    
+
     xmlWrite( fout,'?xml version="1.0" encoding="UTF-8" standalone="yes"?')
-    xmlWrite( fout,'gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config1.3"')
-    
+    xmlWrite( fout,'gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config2.0"')
+
+    # dataLFN is now the first element in QCDml 2.0
+    if dataLFN is None:
+        xmlWrite( fout, 'dataLFN', p.dataLFN, indent=2 )
+    else:
+        xmlWrite( fout, 'dataLFN', dataLFN, indent=2 )
+
     xmlWrite( fout, 'management', indent=2 )
     if revisions is not None:
         xmlWrite( fout, 'revisions', revisions, indent=4 )
     if reference is not None:
         xmlWrite( fout, 'reference', reference, indent=4 )
-    xmlWrite( fout, 'crcCheckSum', p.checksum, indent=4 )
+    # NOTE: crcCheckSum moved to record element in QCDml 2.0
     xmlWrite( fout, 'archiveHistory', indent=4 )
     for i in range(len(p.revisionAction)):
-        xmlWrite( fout, 'elem', indent=6 )
+        xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
         if revisionNumber is not None:
             xmlWrite( fout, 'revision', revisionNumber[i], indent=8 )
         xmlWrite( fout, 'revisionAction', p.revisionAction[i], indent=8 )
@@ -72,52 +66,55 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
         xmlWrite( fout, 'institution', p.reviserInstitute[i], indent=10 )
         xmlWrite( fout, '/participant', indent=8 )
         xmlWrite( fout, 'date', p.revisionDate[i], indent=8 )
-        if revisionComment is not None:
-            xmlWrite( fout, 'comment', p.revisionComment, indent=8 )
-        xmlWrite( fout, '/elem', indent=6 )
+        # NOTE: comment element removed from managementActionType in QCDml 2.0
+        xmlWrite( fout, '/archiveEvent', indent=6 )
     xmlWrite( fout, '/archiveHistory', indent=4 )
     xmlWrite( fout, '/management', indent=2 )
-    
+
     xmlWrite( fout, 'implementation', indent=2 )
     xmlWrite( fout, 'machine', indent=4 )
     xmlWrite( fout, 'name', p.machineName, indent=6 )
     xmlWrite( fout, 'institution', p.machineInstitute, indent=6 )
     xmlWrite( fout, 'machineType', p.machineType, indent=6 )
-    if machineComment is not None:
-        xmlWrite( fout, 'comment', machineComment, indent=6 )
+    # NOTE: comment element removed from machine in QCDml 2.0
     xmlWrite( fout, '/machine', indent=4 )
     xmlWrite( fout, 'code', indent=4 )
     xmlWrite( fout, 'name', p.code, indent=6 )
     xmlWrite( fout, 'version', p.codeVersion, indent=6 )
     xmlWrite( fout, 'date', p.codeCompileDate, indent=6 )
-    if codeComment is not None:
-        xmlWrite( fout, 'comment', codeComment, indent=6 )
+    # NOTE: comment element removed from code in QCDml 2.0
     xmlWrite( fout, '/code', indent=4 )
     xmlWrite( fout, '/implementation', indent=2 )
-    
+
     xmlWrite( fout, 'algorithm', indent=2 )
     xmlWrite( fout, 'parameters', indent=4 )
     if parameterName is not None:
         for i in range(len(parameterName)):
-            fout.write('      <name>'+parameterName[i]+'</name><value>'+parameterValue[i]+'</value>\n')
+            xmlWrite( fout, 'parameter', indent=6 )
+            fout.write('        <name>'+parameterName[i]+'</name>\n')
+            fout.write('        <value>'+parameterValue[i]+'</value>\n')
+            xmlWrite( fout, '/parameter', indent=6 )
     xmlWrite( fout, '/parameters', indent=4 )
     xmlWrite( fout, '/algorithm', indent=2 )
-    xmlWrite( fout, 'precision', p.precision,indent=2 )
-    
-    xmlWrite( fout, 'markovStep', indent=2 )
+    xmlWrite( fout, 'precision', p.precision, indent=2 )
+
+    # markovSequence replaces the old top-level markovStep in QCDml 2.0
+    xmlWrite( fout, 'markovSequence', indent=2 )
     if markovChainURI is None:
         xmlWrite( fout, 'markovChainURI', p.markovChainURI, indent=4 )
     else:
         xmlWrite( fout, 'markovChainURI', markovChainURI, indent=4 )
     xmlWrite( fout, 'series', p.series, indent=4 )
-    xmlWrite( fout, 'update', p.update, indent=4 )
-    xmlWrite( fout, 'avePlaquette', p.plaquette, indent=4 )
-    if dataLFN is None:
-        xmlWrite( fout, 'dataLFN', p.dataLFN, indent=4 )
-    else:
-        xmlWrite( fout, 'dataLFN', dataLFN, indent=4 )
-    xmlWrite( fout, '/markovStep', indent=2 )
-    
+    xmlWrite( fout, 'markovStep', indent=4 )
+    xmlWrite( fout, 'update', p.update, indent=6 )
+    xmlWrite( fout, 'record', indent=6 )
+    xmlWrite( fout, 'field', p.field, indent=8 )
+    xmlWrite( fout, 'crcCheckSum', p.checksum, indent=8 )
+    xmlWrite( fout, 'avePlaquette', p.plaquette, indent=8 )
+    xmlWrite( fout, '/record', indent=6 )
+    xmlWrite( fout, '/markovStep', indent=4 )
+    xmlWrite( fout, '/markovSequence', indent=2 )
+
     xmlWrite( fout, '/gaugeConfiguration' )
     fout.close()
 
@@ -130,33 +127,36 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     """ Use the profiles p, gluonProf, and quarkProf to generate the QCDml ensemble file.  """
 
     fout=open(p.QCDmlEnsembleFileName,'w')
-    
+
     xmlWrite( fout, '?xml version="1.0" encoding="UTF-8" standalone="yes"?' )
-    xmlWrite( fout, 'markovChain xmlns="http://www.lqcd.org/ildg/QCDml/ensemble1.4"' )
+    xmlWrite( fout, 'markovChain xmlns="http://www.lqcd.org/ildg/QCDml/ensemble2.0"' )
     xmlWrite( fout, 'markovChainURI', p.markovChainURI, indent=2 )
-    
+
     xmlWrite( fout, 'management', indent=2 )
     xmlWrite( fout, 'collaboration', p.collaboration, indent=4 )
     xmlWrite( fout, 'projectName', p.projectName, indent=4 )
     xmlWrite( fout, 'archiveHistory', indent=4 )
-    xmlWrite( fout, 'elem', indent=6 )
+    xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
     xmlWrite( fout, 'revisionAction', 'add', indent=8 )
     xmlWrite( fout, 'participant', indent=8 )
     xmlWrite( fout, 'name', 'Carsten Urbach', indent=10 )
     xmlWrite( fout, 'institution', 'University of Liverpool', indent=10 )
     xmlWrite( fout, '/participant', indent=8 )
     xmlWrite( fout, 'date', '2006-01-09T19:33:55+01:00', indent=8 )
-    xmlWrite( fout, '/elem', indent=6 )
+    xmlWrite( fout, '/archiveEvent', indent=6 )
     xmlWrite( fout, '/archiveHistory', indent=4 )
     xmlWrite( fout, '/management', indent=2 )
-    
+
+    # license is required in QCDml 2.0
+    xmlWrite( fout, 'license', indent=2 )
+    xmlWrite( fout, 'licenseURI', p.license, indent=4 )
+    xmlWrite( fout, '/license', indent=2 )
+
     xmlWrite( fout, 'physics', indent=2 )
+    # size now uses named direction elements (x/y/z/t) in QCDml 2.0
     xmlWrite( fout, 'size', indent=4 )
     for direction in p.size:
-        xmlWrite( fout, 'elem', indent=6 )
-        xmlWrite( fout, 'name', direction,indent=8 )
-        xmlWrite( fout, 'length', p.size[direction], indent=8 )
-        xmlWrite( fout, '/elem', indent=6 )
+        xmlWrite( fout, direction, p.size[direction], indent=6 )
     xmlWrite( fout, '/size', indent=4 )
 
     xmlWrite( fout, 'action', indent=4 )
@@ -172,9 +172,10 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     xmlWrite( fout, 'gluonField', indent=10 )
     xmlWrite( fout, 'gaugeGroup', p.gaugeGroup, indent=12 )
     xmlWrite( fout, 'representation', p.gaugeRepresentation, indent=12 )
+    # boundaryCondition now uses named direction elements (x/y/z/t) in QCDml 2.0
     xmlWrite( fout, 'boundaryCondition', indent=12 )
-    for BC in p.gaugeBCs:
-        xmlWrite( fout, 'elem', BC, indent=14 )
+    for direction, bc in p.gaugeBCs.items():
+        xmlWrite( fout, direction, bc, indent=14 )
     xmlWrite( fout, '/boundaryCondition', indent=12 )
     xmlWrite( fout, '/gluonField', indent=10 )
     xmlWrite( fout, 'beta', p.couplings["beta"] , indent=10 )
@@ -197,9 +198,10 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
         xmlWrite( fout, 'glossary', quarkProf.glossary, indent=10 )
         xmlWrite( fout, 'quarkField', indent=10 )
         xmlWrite( fout, 'normalisation', quarkProf.quarkNormalization, indent=12 )
+        # boundaryCondition now uses named direction elements (x/y/z/t) in QCDml 2.0
         xmlWrite( fout, 'boundaryCondition', indent=12 )
-        for BC in quarkProf.quarkBCs:
-            xmlWrite( fout, 'elem', BC, indent=14 )
+        for direction, bc in quarkProf.quarkBCs.items():
+            xmlWrite( fout, direction, bc, indent=14 )
         xmlWrite( fout, '/boundaryCondition', indent=12 )
         xmlWrite( fout, '/quarkField', indent=10 )
         xmlWrite( fout, 'numberOfFlavours', p.Nf[f], indent=10 )
@@ -210,13 +212,14 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     xmlWrite( fout, '/quark', indent=6 )
     xmlWrite( fout, '/action', indent=4 )
     xmlWrite( fout, '/physics', indent=2 )
-    
+
     xmlWrite( fout, 'algorithm', indent=2 )
     xmlWrite( fout, 'name', quarkProf.algorithm,indent=4 )
     xmlWrite( fout, 'glossary', quarkTools.algorithmGlossary[quarkProf.algorithm], indent=4 )
     xmlWrite( fout, 'reference', quarkTools.algorithmReference[quarkProf.algorithm], indent=4 )
     xmlWrite( fout, 'exact', quarkTools.algorithmExactness[quarkProf.algorithm], indent=4 )
+    xmlWrite( fout, 'reweightingNeeded', quarkTools.algorithmReweightingNeeded[quarkProf.algorithm], indent=4 )
     xmlWrite( fout, '/algorithm', indent=2 )
     xmlWrite( fout, '/markovChain' )
-    
+
     fout.close()

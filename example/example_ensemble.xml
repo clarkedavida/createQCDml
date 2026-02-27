@@ -1,38 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<markovChain xmlns="http://www.lqcd.org/ildg/QCDml/ensemble1.4">
+<markovChain xmlns="http://www.lqcd.org/ildg/QCDml/ensemble2.0">
   <markovChainURI>mc://ldg/HotQCD/f21_chiral/l408f21b6260m002025m0810</markovChainURI>
   <management>
     <collaboration>HotQCD</collaboration>
     <projectName>f21_chiral</projectName>
     <archiveHistory>
-      <elem>
+      <archiveEvent>
         <revisionAction>add</revisionAction>
         <participant>
           <name>Carsten Urbach</name>
           <institution>University of Liverpool</institution>
         </participant>
         <date>2006-01-09T19:33:55+01:00</date>
-      </elem>
+      </archiveEvent>
     </archiveHistory>
   </management>
+  <license>
+    <licenseURI>https://creativecommons.org/licenses/by/4.0/</licenseURI>
+  </license>
   <physics>
     <size>
-      <elem>
-        <name>X</name>
-        <length>40</length>
-      </elem>
-      <elem>
-        <name>Y</name>
-        <length>40</length>
-      </elem>
-      <elem>
-        <name>Z</name>
-        <length>40</length>
-      </elem>
-      <elem>
-        <name>T</name>
-        <length>8</length>
-      </elem>
+      <x>40</x>
+      <y>40</y>
+      <z>40</z>
+      <t>8</t>
     </size>
     <action>
       <gluon>
@@ -42,10 +33,10 @@
             <gaugeGroup>SU(3)</gaugeGroup>
             <representation>fundamental</representation>
             <boundaryCondition>
-              <elem>periodic</elem>
-              <elem>periodic</elem>
-              <elem>periodic</elem>
-              <elem>periodic</elem>
+              <x>periodic</x>
+              <y>periodic</y>
+              <z>periodic</z>
+              <t>periodic</t>
             </boundaryCondition>
           </gluonField>
           <beta>6.26</beta>
@@ -62,8 +53,10 @@
           <quarkField>
             <normalisation>DoNotKnowYet</normalisation>
             <boundaryCondition>
-              <elem>antiperiodic</elem>
-              <elem>periodic</elem>
+              <x>periodic</x>
+              <y>periodic</y>
+              <z>periodic</z>
+              <t>antiperiodic</t>
             </boundaryCondition>
           </quarkField>
           <numberOfFlavours>1</numberOfFlavours>
@@ -97,8 +90,10 @@
           <quarkField>
             <normalisation>DoNotKnowYet</normalisation>
             <boundaryCondition>
-              <elem>antiperiodic</elem>
-              <elem>periodic</elem>
+              <x>periodic</x>
+              <y>periodic</y>
+              <z>periodic</z>
+              <t>antiperiodic</t>
             </boundaryCondition>
           </quarkField>
           <numberOfFlavours>2</numberOfFlavours>
@@ -135,5 +130,6 @@
     <glossary>http://www.liv.ac.uk/~urbach/ildg/algorithmGlossaries/RHMC.pdf</glossary>
     <reference>Phys. Rev. Lett. 98 (2007) 051601</reference>
     <exact>true</exact>
+    <reweightingNeeded>false</reweightingNeeded>
   </algorithm>
 </markovChain>

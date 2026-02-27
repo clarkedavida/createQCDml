@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config1.3">
+<gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config2.0">
+  <dataLFN>mc://ldg/HotQCD/f21_chiral/l408f21b6260m002025m0810/l408f21b6260m002025m0810a_0.400</dataLFN>
   <management>
     <revisions>2</revisions>
     <reference>myreference</reference>
-    <crcCheckSum>12ec367d</crcCheckSum>
     <archiveHistory>
-      <elem>
+      <archiveEvent>
         <revision>0</revision>
         <revisionAction>generate</revisionAction>
         <participant>
@@ -13,18 +13,16 @@
           <institution>Bielefeld University</institution>
         </participant>
         <date>2022-08-21T00:00:00+00:00</date>
-        <comment>myrevision</comment>
-      </elem>
-      <elem>
+      </archiveEvent>
+      <archiveEvent>
         <revision>1</revision>
         <revisionAction>add</revisionAction>
         <participant>
           <name>Merkin Muffley</name>
           <institution>Brookhaven National Laboratory</institution>
         </participant>
-        <date>2026-02-27T19:56:53+01:00</date>
-        <comment>myrevision</comment>
-      </elem>
+        <date>2026-02-27T20:35:44+01:00</date>
+      </archiveEvent>
     </archiveHistory>
   </management>
   <implementation>
@@ -32,28 +30,40 @@
       <name>Summit</name>
       <institution>Oakridge National Laboratory</institution>
       <machineType>IBM</machineType>
-      <comment>mymachine</comment>
     </machine>
     <code>
       <name>SIMULATeQCD</name>
       <version>0.1</version>
       <date>2022-01-21T00:00:00+00:00</date>
-      <comment>mycode</comment>
     </code>
   </implementation>
   <algorithm>
     <parameters>
-      <name>A</name><value>1</value>
-      <name>B</name><value>2</value>
-      <name>C</name><value>3</value>
+      <parameter>
+        <name>A</name>
+        <value>1</value>
+      </parameter>
+      <parameter>
+        <name>B</name>
+        <value>2</value>
+      </parameter>
+      <parameter>
+        <name>C</name>
+        <value>3</value>
+      </parameter>
     </parameters>
   </algorithm>
   <precision>single</precision>
-  <markovStep>
+  <markovSequence>
     <markovChainURI>mc://ldg/HotQCD/f21_chiral/l408f21b6260m002025m0810</markovChainURI>
     <series>0</series>
-    <update>400</update>
-    <avePlaquette>1.0</avePlaquette>
-    <dataLFN>mc://ldg/HotQCD/f21_chiral/l408f21b6260m002025m0810/l408f21b6260m002025m0810a_0.400</dataLFN>
-  </markovStep>
+    <markovStep>
+      <update>400</update>
+      <record>
+        <field>su3gauge</field>
+        <crcCheckSum>12ec367d</crcCheckSum>
+        <avePlaquette>1.0</avePlaquette>
+      </record>
+    </markovStep>
+  </markovSequence>
 </gaugeConfiguration>

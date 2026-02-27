@@ -58,6 +58,9 @@ algorithmReference = { 'RHMC' : 'Phys. Rev. Lett. 98 (2007) 051601' }
 algorithmExactness = { 'RHMC' : 'true' }
 
 
+algorithmReweightingNeeded = { 'RHMC' : 'false' }
+
+
 #
 # Link treatment glossary lookup table.
 #
