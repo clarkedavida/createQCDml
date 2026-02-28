@@ -179,12 +179,18 @@ def checkEnsembleProfile(p):
 
     lcheck=True
 
+    # First check some of the required info is there. 
+    if p.license is None:
+        lcheck *= QCDmlError("QCDml ensemble requires a license.")
+    if p.markovChainURI is None:
+        lcheck *= QCDmlError("QCDml ensemble requires markovChainURI.")
+    if p.collaboration is None:
+        lcheck *= QCDmlError("QCDml ensemble requires collboration.")
+    if p.projectName is None:
+        lcheck *= QCDmlError("QCDml ensemble requires project name.")
+
     if not p.QCDmlEnsembleFileName.endswith('.xml'):
         lcheck *= QCDmlError("QCDml ensemble name must end with xml.")
-    
-    for BC in p.gaugeBCs.values():
-        if not BC in ["periodic","antiperiodic","dirichlet","cstar","open","openSF"]:
-            lcheck *= QCDmlError("Gauge BC",BC,"not allowed!")
 
     if len(p.size)!=4:
         lcheck *= QCDmlError("ILDG only supports 4D configurations currently.") 
@@ -194,9 +200,6 @@ def checkEnsembleProfile(p):
             lcheck *= QCDmlError("Direction",direction,"must be an integer.")
         if p.size[direction]<1:
             lcheck *= QCDmlError("Direction",direction,"must be positive.")
-
-    if not p.gaugeGroup=="SU(3)":
-        lcheck *= QCDmlError("ILDG only supports SU(3) currently.")
 
     if not lcheck:
         QCDmlFail("One or more errors in ensemble profile detected.")

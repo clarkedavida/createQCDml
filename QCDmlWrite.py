@@ -139,21 +139,19 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
     xmlWrite( fout, 'revisionAction', 'add', indent=8 )
     xmlWrite( fout, 'participant', indent=8 )
-    xmlWrite( fout, 'name', 'Carsten Urbach', indent=10 )
-    xmlWrite( fout, 'institution', 'University of Liverpool', indent=10 )
+    xmlWrite( fout, 'name', p.name, indent=10 )
+    xmlWrite( fout, 'institution', p.institution, indent=10 )
     xmlWrite( fout, '/participant', indent=8 )
-    xmlWrite( fout, 'date', '2006-01-09T19:33:55+01:00', indent=8 )
+    xmlWrite( fout, 'date', p.date, indent=8 )
     xmlWrite( fout, '/archiveEvent', indent=6 )
     xmlWrite( fout, '/archiveHistory', indent=4 )
     xmlWrite( fout, '/management', indent=2 )
 
-    # license is required in QCDml 2.0
     xmlWrite( fout, 'license', indent=2 )
     xmlWrite( fout, 'licenseURI', p.license, indent=4 )
     xmlWrite( fout, '/license', indent=2 )
 
     xmlWrite( fout, 'physics', indent=2 )
-    # size now uses named direction elements (x/y/z/t) in QCDml 2.0
     xmlWrite( fout, 'size', indent=4 )
     for direction in p.size:
         xmlWrite( fout, direction, p.size[direction], indent=6 )
@@ -170,11 +168,10 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     xmlWrite( fout, gluonProf.actionType, indent=8 )
     xmlWrite( fout, 'glossary', gluonTools.glossaryDict[gluonProf.actionType], indent=10 )
     xmlWrite( fout, 'gluonField', indent=10 )
-    xmlWrite( fout, 'gaugeGroup', p.gaugeGroup, indent=12 )
-    xmlWrite( fout, 'representation', p.gaugeRepresentation, indent=12 )
-    # boundaryCondition now uses named direction elements (x/y/z/t) in QCDml 2.0
+    xmlWrite( fout, 'gaugeGroup', gluonProf.gaugeGroup, indent=12 )
+    xmlWrite( fout, 'representation', gluonProf.gaugeRepresentation, indent=12 )
     xmlWrite( fout, 'boundaryCondition', indent=12 )
-    for direction, bc in p.gaugeBCs.items():
+    for direction, bc in gluonProf.gaugeBCs.items():
         xmlWrite( fout, direction, bc, indent=14 )
     xmlWrite( fout, '/boundaryCondition', indent=12 )
     xmlWrite( fout, '/gluonField', indent=10 )
@@ -198,7 +195,6 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
         xmlWrite( fout, 'glossary', quarkProf.glossary, indent=10 )
         xmlWrite( fout, 'quarkField', indent=10 )
         xmlWrite( fout, 'normalisation', quarkProf.quarkNormalization, indent=12 )
-        # boundaryCondition now uses named direction elements (x/y/z/t) in QCDml 2.0
         xmlWrite( fout, 'boundaryCondition', indent=12 )
         for direction, bc in quarkProf.quarkBCs.items():
             xmlWrite( fout, direction, bc, indent=14 )

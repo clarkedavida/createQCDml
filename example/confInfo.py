@@ -3,9 +3,10 @@
 # 
 # D. Clarke 
 # 
-# Input data special to configurations. 
-# 
-
+# This is an example profile when you want to make a QCDml file for a configuration.
+# By the way, you can also structure this as a class inside exampleQCDmlUtilScript
+# if you prefer. 
+#
 
 from QCDmlUtils import shell
 

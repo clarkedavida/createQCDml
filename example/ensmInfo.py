@@ -3,9 +3,11 @@
 # 
 # D. Clarke 
 # 
-# Generic ensemble metadata. 
+# This is an example profile when you want to make a QCDml file for an ensemble.
+# By the way, you can also structure this as a class inside exampleQCDmlUtilScript
+# if you prefer. 
 #
-from QCDmlUtils import makeConfURI 
+from QCDmlUtils import makeConfURI, shell 
 
 # This will be the output XML name. 
 QCDmlEnsembleFileName = "example_ensemble.xml"
@@ -15,11 +17,7 @@ size = { "x" : 40,
          "z" : 40,
          "t" : 8  }
 
-gaugeGroup          = "SU(3)"
-gaugeRepresentation = "fundamental"
-gaugeBCs            = { "x" : "periodic", "y" : "periodic", "z" : "periodic", "t" : "periodic" }
-
-license             = "https://creativecommons.org/licenses/by/4.0/"
+license = "https://creativecommons.org/licenses/by/4.0/"
 
 quarks = {"l", "s"}
 
@@ -30,7 +28,10 @@ couplings = { "beta" : 6.260,
               "ml"   : 0.002025,
               "ms"   : 0.0810 }
 
+name                = "Lisa Simpson"
+institution         = "Springfield University"
 collaboration       = "HotQCD"
+date                = shell('./hubert-mtime.pl')
 projectName         = "f21_chiral"
 ensembleName        = "l408f21b6260m002025m0810"
 markovChainURI      = makeConfURI(collaboration,projectName,ensembleName)

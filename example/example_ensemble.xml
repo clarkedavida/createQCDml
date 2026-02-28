@@ -8,10 +8,10 @@
       <archiveEvent>
         <revisionAction>add</revisionAction>
         <participant>
-          <name>Carsten Urbach</name>
-          <institution>University of Liverpool</institution>
+          <name>Lisa Simpson</name>
+          <institution>Springfield University</institution>
         </participant>
-        <date>2006-01-09T19:33:55+01:00</date>
+        <date>2026-02-28T15:41:16+01:00</date>
       </archiveEvent>
     </archiveHistory>
   </management>
@@ -41,15 +41,15 @@
           </gluonField>
           <beta>6.26</beta>
           <normalisation>c0_is_one</normalisation>
-          <c0>1.66666667</c0>
-          <c1>-0.0833333333</c1>
+          <c0>1.25</c0>
+          <c1>-0.16666666666666666</c1>
           <c2>0.0</c2>
           <c3>0.0</c3>
         </treelevelSymanzikGluonAction>
       </gluon>
       <quark>
         <hisqQuarkAction>
-          <glossary>http://www.lqcd.org/ildg/actionGlossaries/hisqQuarkAction.pdf</glossary>
+          <glossary>https://latticeqcd.github.io/SIMULATeQCD/05_modules/HISQforce.html</glossary>
           <quarkField>
             <normalisation>DoNotKnowYet</normalisation>
             <boundaryCondition>
@@ -86,7 +86,7 @@
           </LinkTreatment>
         </hisqQuarkAction>
         <hisqQuarkAction>
-          <glossary>http://www.lqcd.org/ildg/actionGlossaries/hisqQuarkAction.pdf</glossary>
+          <glossary>https://latticeqcd.github.io/SIMULATeQCD/05_modules/HISQforce.html</glossary>
           <quarkField>
             <normalisation>DoNotKnowYet</normalisation>
             <boundaryCondition>

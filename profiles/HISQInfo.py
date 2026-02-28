@@ -3,14 +3,16 @@
 # 
 # D. Clarke 
 # 
-# Ensemble metadata that are specific to the HISQ action. 
+# Ensemble metadata that are specific to the HISQ action. Assumes 
+# there is no heavy-quark (e.g. charm) correction epsilon. 
 #
 
 actionType = 'hisqQuarkAction'
 
-quarkNormalization = 'DoNotKnowYet'
+# Taken from 
+quarkNormalization        = "sqrt(2)" 
+projectGroupLinkTreatment = "U(3)"
 
-# [periodic, antiperiodic, dirichlet, cstar, open, openSF]
 quarkBCs = { "x" : "periodic",
              "y" : "periodic",
              "z" : "periodic",
@@ -30,4 +32,4 @@ asqTadQuarkLinks = { 'cNaik'       : -1/24,
 
 algorithm = "RHMC"
 
-glossary = 'http://www.lqcd.org/ildg/actionGlossaries/hisqQuarkAction.pdf'
+glossary = 'https://latticeqcd.github.io/SIMULATeQCD/05_modules/HISQforce.html'
