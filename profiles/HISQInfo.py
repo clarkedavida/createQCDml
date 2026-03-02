@@ -9,7 +9,6 @@
 
 actionType = 'hisqQuarkAction'
 
-# Taken from 
 quarkNormalization        = "sqrt(2)" 
 projectGroupLinkTreatment = "U(3)"
 

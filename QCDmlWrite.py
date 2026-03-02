@@ -43,7 +43,6 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
     xmlWrite( fout,'?xml version="1.0" encoding="UTF-8" standalone="yes"?')
     xmlWrite( fout,'gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config2.0"')
 
-    # dataLFN is now the first element in QCDml 2.0
     if dataLFN is None:
         xmlWrite( fout, 'dataLFN', p.dataLFN, indent=2 )
     else:
@@ -54,7 +53,6 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
         xmlWrite( fout, 'revisions', revisions, indent=4 )
     if reference is not None:
         xmlWrite( fout, 'reference', reference, indent=4 )
-    # NOTE: crcCheckSum moved to record element in QCDml 2.0
     xmlWrite( fout, 'archiveHistory', indent=4 )
     for i in range(len(p.revisionAction)):
         xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
@@ -66,7 +64,6 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
         xmlWrite( fout, 'institution', p.reviserInstitute[i], indent=10 )
         xmlWrite( fout, '/participant', indent=8 )
         xmlWrite( fout, 'date', p.revisionDate[i], indent=8 )
-        # NOTE: comment element removed from managementActionType in QCDml 2.0
         xmlWrite( fout, '/archiveEvent', indent=6 )
     xmlWrite( fout, '/archiveHistory', indent=4 )
     xmlWrite( fout, '/management', indent=2 )
@@ -76,13 +73,15 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
     xmlWrite( fout, 'name', p.machineName, indent=6 )
     xmlWrite( fout, 'institution', p.machineInstitute, indent=6 )
     xmlWrite( fout, 'machineType', p.machineType, indent=6 )
-    # NOTE: comment element removed from machine in QCDml 2.0
     xmlWrite( fout, '/machine', indent=4 )
     xmlWrite( fout, 'code', indent=4 )
+    try:
+        xmlWrite( fout, 'annotation', p.codeComment, indent=6 )
+    except AttributeError:
+        pass
     xmlWrite( fout, 'name', p.code, indent=6 )
     xmlWrite( fout, 'version', p.codeVersion, indent=6 )
     xmlWrite( fout, 'date', p.codeCompileDate, indent=6 )
-    # NOTE: comment element removed from code in QCDml 2.0
     xmlWrite( fout, '/code', indent=4 )
     xmlWrite( fout, '/implementation', indent=2 )
 
@@ -139,6 +138,10 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
     xmlWrite( fout, 'revisionAction', 'add', indent=8 )
     xmlWrite( fout, 'participant', indent=8 )
+    try:
+        xmlWrite( fout, 'orcid', p.orcid, indent=10 )
+    except AttributeError:
+        pass
     xmlWrite( fout, 'name', p.name, indent=10 )
     xmlWrite( fout, 'institution', p.institution, indent=10 )
     xmlWrite( fout, '/participant', indent=8 )
@@ -159,6 +162,7 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
 
     xmlWrite( fout, 'action', indent=4 )
 
+    #--- Gluon action
     if gluonProf.actionType=='treelevelSymanzikGluonAction':
         gluonMD = gluonTools.treeSymanzikAction(fout,gluonProf)
     else:
@@ -188,7 +192,7 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     else:
         quarkMD = quarkTools.quarkAction(fout,quarkProf)
 
-    # At the moment, this assumes all quarks have everything in common except m_f and Nf
+    #--- Quark action
     for f in p.quarks:
         m_f = "m"+f
         xmlWrite( fout, quarkProf.actionType, indent=8 )

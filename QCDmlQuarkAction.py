@@ -49,7 +49,7 @@ class HISQAction(quarkAction):
 #
 # Algorithm lookup tables.
 #
-algorithmGlossary  = { 'RHMC' : 'http://www.liv.ac.uk/~urbach/ildg/algorithmGlossaries/RHMC.pdf' }
+algorithmGlossary  = { 'RHMC' : 'https://latticeqcd.github.io/SIMULATeQCD/03_applications/rhmc.html' }
 
 
 algorithmReference = { 'RHMC' : 'Phys. Rev. Lett. 98 (2007) 051601' }

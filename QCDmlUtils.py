@@ -119,11 +119,14 @@ def checkConfigProfile(p):
         lcheck *= QCDmlError("First revision action must be 'generate'.")
     if p.revisionAction[1] != "add":
         lcheck *= QCDmlError("Second revision action must be 'add'.")
-    
-    for date in p.revisionDate:
-        if getDateInt(p.codeCompileDate) > getDateInt(date):
-            lcheck *= QCDmlError("Compile date suggests code was compiled after running.")
-    
+
+    try:    
+        for date in p.revisionDate:
+            if getDateInt(p.codeCompileDate) > getDateInt(date):
+                lcheck *= QCDmlError("Compile date suggests code was compiled after running.")
+    except AttributeError:
+        pass
+
     if not p.precision in ["single","double","mixed"]:
         lcheck *= QCDmlError("Precision ",p.precision,"not allowed!")
     
@@ -132,10 +135,9 @@ def checkConfigProfile(p):
     
     if revisionNumber is not None:
         numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute), 
-                            len(p.revisionDate), len(revisionNumber) )
+                            len(revisionNumber) )
     else:
-        numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute), 
-                            len(p.revisionDate) )
+        numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute) )
     
     if len(p.revisionAction) != numRevisions:
         lcheck *= QCDmlError("Number revision actions != number revisions.")
@@ -145,10 +147,13 @@ def checkConfigProfile(p):
     
     if len(p.reviserInstitute) != numRevisions:
         lcheck *= QCDmlError("Number reviser institutes != number revisions.")
-    
-    if len(p.revisionDate) != numRevisions:
-        lcheck *= QCDmlError("Number revision dates != number revisions.")
-    
+
+    try:    
+        if len(p.revisionDate) != numRevisions:
+            lcheck *= QCDmlError("Number revision dates != number revisions.")
+    except AttributeError:
+        pass
+
     if revisionNumber is not None:
         if len(revisionNumber) != numRevisions:
             lcheck *= QCDmlError("Number revision identifiers != number revisions.")

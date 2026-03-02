@@ -77,5 +77,6 @@ That's it, you're done! The full example is in `exampleQCDmlUtilScript.py`.
 ## Explanation of file tree
 
 - `example`: Contains examples how to use this code.
+- `glossaries`: Some glossary PDFs from the old ILDG.
 - `profile`: Contains some profiles specific to particular actions.
 - `xml`: Contains QCDml2.0 schemata along with a small script for validation.
