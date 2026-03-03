@@ -90,8 +90,8 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
     if parameterName is not None:
         for i in range(len(parameterName)):
             xmlWrite( fout, 'parameter', indent=6 )
-            fout.write('        <name>'+parameterName[i]+'</name>\n')
-            fout.write('        <value>'+parameterValue[i]+'</value>\n')
+            xmlWrite( fout, 'name', parameterName[i], indent=8)
+            xmlWrite( fout, 'value', parameterValue[i], indent=8)
             xmlWrite( fout, '/parameter', indent=6 )
     xmlWrite( fout, '/parameters', indent=4 )
     xmlWrite( fout, '/algorithm', indent=2 )
@@ -104,22 +104,30 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
     else:
         xmlWrite( fout, 'markovChainURI', markovChainURI, indent=4 )
     xmlWrite( fout, 'series', p.series, indent=4 )
-    xmlWrite( fout, 'markovStep', indent=4 )
-    xmlWrite( fout, 'update', p.update, indent=6 )
-    xmlWrite( fout, 'record', indent=6 )
-    xmlWrite( fout, 'field', p.field, indent=8 )
-    xmlWrite( fout, 'crcCheckSum', p.checksum, indent=8 )
-    xmlWrite( fout, 'avePlaquette', p.plaquette, indent=8 )
-    xmlWrite( fout, '/record', indent=6 )
-    xmlWrite( fout, '/markovStep', indent=4 )
+    if isinstance(p.update,str):
+        xmlWrite( fout, 'markovStep', indent=4 )
+        xmlWrite( fout, 'update', p.update, indent=6 )
+        xmlWrite( fout, 'record', indent=6 )
+        xmlWrite( fout, 'field', p.field, indent=8 )
+        xmlWrite( fout, 'crcCheckSum', p.checksum, indent=8 )
+        xmlWrite( fout, 'avePlaquette', p.plaquette, indent=8 )
+        xmlWrite( fout, '/record', indent=6 )
+        xmlWrite( fout, '/markovStep', indent=4 )
+    elif isinstance(p.update,list):
+        for i in range(len(p.update)):
+            xmlWrite( fout, 'markovStep', indent=4 )
+            xmlWrite( fout, 'update', p.update[i], indent=6 )
+            xmlWrite( fout, 'record', indent=6 )
+            xmlWrite( fout, 'field', p.field, indent=8 )
+            xmlWrite( fout, 'crcCheckSum', p.checksum[i], indent=8 )
+            xmlWrite( fout, 'avePlaquette', p.plaquette[i], indent=8 )
+            xmlWrite( fout, '/record', indent=6 )
+            xmlWrite( fout, '/markovStep', indent=4 )
     xmlWrite( fout, '/markovSequence', indent=2 )
 
     xmlWrite( fout, '/gaugeConfiguration' )
     fout.close()
 
-
-# How to treat Nf=2+1? ( similar to wilsonTMquark: have one that is 2-flavor
-#   and another one that is 1-flavor)
 
 def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
 

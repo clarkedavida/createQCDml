@@ -48,11 +48,25 @@ def QCDmlFail(*args):
     sys.exit(-1)
 
 
-def QCDmlError(*args):
+def QCDmlError(*args) -> bool:
     """ Print error message and give flag to program that you failed. """ 
     args = [str(s) for s in args]
     print('  ERROR: '+(' '.join(args)))
     return False 
+
+
+def checkEqualLengths(*args) -> bool:
+    """ 
+    Check that all array-like objects passed have the same length. From AnalysisToolbox 
+    """
+    length = len(args[0])
+    for i in range(len(args)):
+        if args[i] is not None:
+            len_i = len(args[i])
+            if len_i != length:
+                print(length, len(args[i]))
+                return QCDmlError(f'Array length mismatch detected for array {i}. len, len[i] = {length}, {len_i}')
+    return True
 
 
 def getDateInt(dateString):
@@ -84,7 +98,6 @@ def getDateInt(dateString):
     return dateInt
 
 
-
 def checkConfigProfile(p):
     """ Run some checks on the profile p that the metadata makes sense. """
 
@@ -108,6 +121,15 @@ def checkConfigProfile(p):
 
     lcheck=True
 
+    if (not isinstance(p.update,list)) and (not isinstance(p.update,str)):
+        lcheck *= QCDmlError("update must be list or str")
+    if isinstance(p.update,list):
+        if not isinstance(p.plaquette,list):
+            lcheck *= QCDmlError("update being list enforces plaquette should be list")
+        if not isinstance(p.checksum,list):
+            lcheck *= QCDmlError("update being list enforces checksum should be list")
+        lcheck *= checkEqualLengths( p.update, p.plaquette, p.checksum )
+
     if not p.QCDmlConfigFileName.endswith('.xml'):
         lcheck *= QCDmlError("QCDml config name must end with xml.")
     
@@ -129,16 +151,23 @@ def checkConfigProfile(p):
 
     if not p.precision in ["single","double","mixed"]:
         lcheck *= QCDmlError("Precision ",p.precision,"not allowed!")
-    
-    if not -1.0 <= float(p.plaquette) <= 1.0:
-        lcheck *= QCDmlError("Detected |plaquette| > 1.0.")
-    
+
+    if isinstance(p.plaquette,list):    
+        for i in range(len(p.plaquette)):
+            if not -1.0 <= float(p.plaquette[i]) <= 1.0:
+                lcheck *= QCDmlError("Detected |plaquette| > 1.0 for conf",i)
+    else:
+        if not -1.0 <= float(p.plaquette) <= 1.0:
+            lcheck *= QCDmlError("Detected |plaquette| > 1.0.")
+
     if revisionNumber is not None:
         numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute), 
                             len(revisionNumber) )
     else:
         numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute) )
-    
+
+    lcheck *= checkEqualLengths(p.revisionAction,p.reviser,p.reviserInstitute,p.revisionNumber)
+
     if len(p.revisionAction) != numRevisions:
         lcheck *= QCDmlError("Number revision actions != number revisions.")
     
