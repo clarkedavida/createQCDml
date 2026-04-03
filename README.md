@@ -64,9 +64,9 @@ the XML files. For instance:
 checkConfigProfile( confInfo )
 checkEnsembleProfile( ensmInfo )
 
-# Also possible to call like: makeConfURI( collaboration, projectName, ensembleName )
-URI = makeConfURI( ensmInfo )
-LFN = makeDataLFN( URI, confInfo.configurationName )
+# Also possible to call like: makeURI( collaboration, projectName, ensembleName )
+URI = makeURI( ensmInfo )
+LFN = makeLFN( URI, confInfo.configurationName )
 
 # Make the ensemble and configuration XML files.
 writeQCDmlEnsembleFile( ensmInfo, gActInfo, qActInfo )

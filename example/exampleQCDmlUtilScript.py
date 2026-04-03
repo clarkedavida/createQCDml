@@ -11,7 +11,7 @@
 #
 
 # Some ingredients from createQCDml
-from QCDmlUtils import makeConfURI, makeDataLFN, checkConfigProfile, checkEnsembleProfile 
+from QCDmlUtils import makeURI, makeLFN, checkConfigProfile, checkEnsembleProfile 
 from QCDmlWrite import writeQCDmlConfigFile, writeQCDmlEnsembleFile
 
 # Your input metadata that aren't related to the action. 
@@ -26,9 +26,9 @@ import profiles.HISQInfo as qActInfo
 checkConfigProfile( confInfo )
 checkEnsembleProfile( ensmInfo )
 
-# Also possible to call like: makeConfURI( collaboration, projectName, ensembleName )
-URI = makeConfURI( ensmInfo )
-LFN = makeDataLFN( URI, confInfo.configurationName )
+# Also possible to call like: makeURI( collaboration, projectName, ensembleName )
+URI = makeURI( ensmInfo )
+LFN = makeLFN( ensmInfo.collaboration, ensmInfo.projectName, ensmInfo.ensembleName, confInfo.configurationName )
 
 # Make the ensemble and configuration XML files.
 writeQCDmlEnsembleFile( ensmInfo, gActInfo, qActInfo )

@@ -239,25 +239,27 @@ def checkEnsembleProfile(p):
         QCDmlFail("One or more errors in ensemble profile detected.")
 
 
-def makeConfURI(*args):
-    """ Generate a configuration URI from ensemble information. Example usage:
-            makeConfURI( ensembleInfoFile )
-            makeConfURI( collaboration, projectName, ensembleName )
+def makeURI(*args):
     """ 
+    Generate a URI from ensemble information. Example usage:
+            makeURI( ensembleInfoFile )
+            makeURI( collaboration, projectName, ensembleName )
+    All URIs have to have the same structure; this script enforces that structure.
+    """
     if len(args)==1:
         p = args[0]
         if not isinstance(p,ModuleType): 
             QCDmlFail("Pass either ensemble info or collaboration, project name, and ensemble name.")
-        return "mc://ldg/"+p.collaboration+"/"+p.projectName+"/"+p.ensembleName
+        return f"mc://ldg/{p.collaboration}/{p.projectName}/{p.ensembleName}"
     else:
         try:
             collaboration = args[0]
             projectName   = args[1]
             ensembleName  = args[2]
-            return "mc://ldg/"+collaboration+"/"+projectName+"/"+ensembleName
+            return f"mc://ldg/{collaboration}/{projectName}/{ensembleName}"
         except:
             QCDmlFail("Pass either ensemble info or collaboration, project name, and ensemble name.")
 
 
-def makeDataLFN(confURI,confName):
-    return confURI+"/"+confName
+def makeLFN(collaboration,projectName,ensembleName,confName):
+    return f"lfn://ldg/{collaboration}/{projectName}/{ensembleName}/{confName}"

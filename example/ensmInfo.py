@@ -7,7 +7,7 @@
 # By the way, you can also structure this as a class inside exampleQCDmlUtilScript
 # if you prefer. 
 #
-from QCDmlUtils import makeConfURI, shell 
+from QCDmlUtils import makeURI, shell 
 
 # This will be the output XML name. 
 QCDmlEnsembleFileName = "example_ensemble.xml"
@@ -34,4 +34,4 @@ collaboration       = "HotQCD"
 date                = shell('./hubert-mtime.pl')
 projectName         = "f21_chiral"
 ensembleName        = "l408f21b6260m002025m0810"
-markovChainURI      = makeConfURI(collaboration,projectName,ensembleName)
+markovChainURI      = makeURI(collaboration,projectName,ensembleName)
