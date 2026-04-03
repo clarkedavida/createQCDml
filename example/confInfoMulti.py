@@ -52,6 +52,7 @@ series              = "0"
 update              = ["400","500"]
 plaquette           = ["1.0","0.5"]
 checksum            = ["12ec367d","67au998a"]
+confComment         = ["fake","also fake"]
 precision           = "single"
 field               = "su3gauge"
 

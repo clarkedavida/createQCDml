@@ -106,6 +106,10 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
     xmlWrite( fout, 'series', p.series, indent=4 )
     if isinstance(p.update,str):
         xmlWrite( fout, 'markovStep', indent=4 )
+        try:
+            xmlWrite( fout, 'annotation', p.confComment, indent=6 )
+        except AttributeError:
+            pass
         xmlWrite( fout, 'update', p.update, indent=6 )
         xmlWrite( fout, 'record', indent=6 )
         xmlWrite( fout, 'field', p.field, indent=8 )
@@ -116,6 +120,10 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
     elif isinstance(p.update,list):
         for i in range(len(p.update)):
             xmlWrite( fout, 'markovStep', indent=4 )
+            try:
+                xmlWrite( fout, 'annotation', p.confComment[i], indent=6 )
+            except AttributeError:
+                pass
             xmlWrite( fout, 'update', p.update[i], indent=6 )
             xmlWrite( fout, 'record', indent=6 )
             xmlWrite( fout, 'field', p.field, indent=8 )
