@@ -9,8 +9,7 @@
 #
 from QCDmlUtils import makeURI, shell 
 
-# This will be the output XML name. 
-QCDmlEnsembleFileName = "example_ensemble.xml"
+QCDmlEnsembleFileName = "example_ensemble.xml"  # This will be the output XML name. 
 
 size = { "x" : 40,
          "y" : 40,
@@ -28,12 +27,18 @@ couplings = { "beta" : 6.260,
               "ml"   : 0.002025,
               "ms"   : 0.0810 }
 
-name                = "Lisa Simpson"
+name                = "Lisa Simpson"                     # Archiver
 institution         = "Springfield University"
 collaboration       = "HotQCD"
-date                = shell('./hubert-mtime.pl')
+date                = shell('./hubert-mtime.pl')         # Archival date
 projectName         = "f21_chiral"
 ensembleName        = "l408f21b6260m002025m0810"
 markovChainURI      = makeURI(collaboration,projectName,ensembleName)
-fundingInstitutes   = ["Sneed's","ACME"]
-fundingAwards       = ["Grant 12345","Award No. 54321"] 
+
+# Optional funding info. These must be lists, but you can
+# always set an individual element to None if you don't
+# know it. Make sure that element i of the three lists all
+# correspond to the same award.
+fundingInstitutes   = ["Sneed's","ACME"]                 # Names of funding providers
+fundingAwards       = ["Feed and Seed","ANVIL project"]  # Human-readable title of award/grant
+fundingAwardNos     = ["Grant 12345",None]               # Code assigned by funder to sponsered award

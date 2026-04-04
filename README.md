@@ -17,11 +17,13 @@ you then call using the `QCDmlUtil` command `shell()`. Some example profiles
 can be found in the `profiles` folder. Some example usage of `QCDmlUtil`
 functions can be found in `exampleQCDmlUtilScript.py`.
 
-Most of the core tools already exist in this code. At the moment, only the HISQ
+WARNING: At the moment, only the HISQ
 and tree-level Symanzik actions have example profiles. If ILDG wants to
 use it, what is required is to extend the profiles in the `profiles` folder to
 include other lattice actions. Correspondingly one might want to add
-metadata-checking functions for those actions.
+metadata-checking functions for those actions. Right now there is structure for
+only some optional annotations. More may be added later.
+
 
 ## Getting set up
 
@@ -66,9 +68,8 @@ the XML files. For instance:
 checkConfigProfile( confInfo )
 checkEnsembleProfile( ensmInfo )
 
-# Also possible to call like: makeURI( collaboration, projectName, ensembleName )
-URI = makeURI( ensmInfo )
-LFN = makeLFN( URI, confInfo.configurationName )
+URI = makeURI( ensmInfo ) # Also possible to call like: makeURI( collaboration, projectName, ensembleName )
+LFN = makeLFN( ensmInfo.collaboration, ensmInfo.projectName, ensmInfo.ensembleName, confInfo.configurationName )
 
 # Make the ensemble and configuration XML files.
 writeQCDmlEnsembleFile( ensmInfo, gActInfo, qActInfo )

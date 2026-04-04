@@ -166,6 +166,10 @@ def getEnsOptional(p) -> dict:
         res['awards']=p.fundingAwards
     except AttributeError:
         res['awards']=None
+    try:
+        res['awardNos']=p.fundingAwardNos
+    except AttributeError:
+        res['awardNos']=None
     return res
 
 
@@ -191,7 +195,6 @@ def checkConfigProfile(p):
             lcheck *= QCDmlError("update being list enforces checksum should be list.")
         if not checkEqualLengths( p.update, p.plaquette, p.checksum ):
             lcheck *= QCDmlError("update, plaquette, and checksum lists must have same length.")
-
 
     if not p.QCDmlConfigFileName.endswith('.xml'):
         lcheck *= QCDmlError("QCDml config name must end with xml.")
@@ -278,10 +281,11 @@ def checkEnsembleProfile(p):
 
     lcheck=True
 
-    opt     = getEnsOptional(p)
-    orcid   = opt['orcid']
-    funders = opt['funders']
-    awards  = opt['awards']
+    opt      = getEnsOptional(p)
+    orcid    = opt['orcid']
+    funders  = opt['funders']
+    awards   = opt['awards']
+    awardNos = opt['awardNos']
 
     # First check some of the required info is there. 
     try:
@@ -328,20 +332,20 @@ def checkEnsembleProfile(p):
         if not re.match(orcid_pattern, orcid):
             lcheck *= QCDmlError('ORCID must have form XXXX-XXXX-XXXX-XXXX.')
 
-    if (funders is not None) and (awards is None):
-        lcheck *= QCDmlError('Set both fundingInstitutes and fundingAwards or neither.')
-    if (funders is None) and (awards is not None):
-        lcheck *= QCDmlError('Set both fundingInstitutes and fundingAwards or neither.')
+    if not (((funders is None) and (awards is None) and (awardNos is None)) 
+            or
+            ((funders is not None) and (awards is not None) and (awardNos is not None))
+            ):
+        lcheck *= QCDmlError('fundingInstitutes, fundingAwards, and fundingAwardNos must be set together.')
     if funders is not None:
-        if type(funders) != type(awards): 
-            lcheck *= QCDmlError('fundingInstitutes and fundingAwards must both be str or list.')
-        if (not isinstance(funders,str)) and (not isinstance(funders,list)):
-            lcheck *= QCDmlError('fundingInstitutes and fundingAwards must both be str or list.')
-        if (not isinstance(awards,str)) and (not isinstance(awards,list)):
-            lcheck *= QCDmlError('fundingInstitutes and fundingAwards must both be str or list.')
-        if isinstance(funders,list):
-            if not checkEqualLengths(funders,awards):
-                lcheck *= QCDmlError('fundingInstitutes and fundingAwards must have same length.')
+        if not isinstance(funders,list): 
+            lcheck *= QCDmlError('fundingInstitutes must be list.')
+        if not isinstance(awards,list): 
+            lcheck *= QCDmlError('fundingAwards must be list.')
+        if not isinstance(awardNos,list): 
+            lcheck *= QCDmlError('fundingAwardNos must be list.')
+        if not checkEqualLengths(funders,awards,awardNos):
+            lcheck *= QCDmlError('fundingInstitutes, fundingAwards, and fundingAwardNos must have same length.')
 
     if not lcheck:
         QCDmlFail("One or more errors in ensemble profile detected.")

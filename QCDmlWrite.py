@@ -142,10 +142,11 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
 
     fout = open(p.QCDmlEnsembleFileName,'w')
 
-    opt     = getEnsOptional(p)
-    orcid   = opt['orcid']
-    funders = opt['funders']
-    awards  = opt['awards']
+    opt      = getEnsOptional(p)
+    orcid    = opt['orcid']
+    funders  = opt['funders']
+    awards   = opt['awards']
+    awardNos = opt['awardNos']
 
     xmlWrite( fout, '?xml version="1.0" encoding="UTF-8" standalone="yes"?' )
     xmlWrite( fout, 'markovChain xmlns="http://www.lqcd.org/ildg/QCDml/ensemble2.0"' )
@@ -174,17 +175,14 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
 
     if funders is not None: 
         xmlWrite( fout, 'fundingReferences', indent=2)
-        if isinstance(funders,str):
+        for i in range(len(funders)):
             xmlWrite( fout, 'fundingReference', indent=4)
-            xmlWrite( fout, 'funderName', funders, indent=6)
-            xmlWrite( fout, 'awardTitle', awards, indent=6)
-            xmlWrite( fout, '/fundingReference', indent=4)
-        elif isinstance(funders,list): 
-            for i in range(len(funders)):
-                xmlWrite( fout, 'fundingReference', indent=4)
-                xmlWrite( fout, 'funderName', funders[i], indent=6)
+            xmlWrite( fout, 'funderName', funders[i], indent=6)
+            if awards[i] is not None:
                 xmlWrite( fout, 'awardTitle', awards[i], indent=6)
-                xmlWrite( fout, '/fundingReference', indent=4)
+            if awardNos[i] is not None:
+                xmlWrite( fout, 'awardNumber', awardNos[i], indent=6)
+            xmlWrite( fout, '/fundingReference', indent=4)
         xmlWrite( fout, '/fundingReferences', indent=2)
 
     xmlWrite( fout, 'physics', indent=2 )
