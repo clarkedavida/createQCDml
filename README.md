@@ -3,7 +3,9 @@
 To upload to ILDG, it is expected that you provide some metadata about
 your configurations. There is a strict [QCDml schema](https://doi.org/10.1016/j.nuclphysbps.2004.11.116)
 that should be followed, including a lot of information the user might not know, such as
-the location of a "glossary". The purpose of these tools is to allow you
+the location of a "glossary". One can also find more information about the ILDG specification
+[here](https://gitlab.desy.de/ildg/hands-on/material/-/tree/main/howto?ref_type=heads).
+The purpose of these tools is to allow you
 to write your own Python scripts streamlining this process.
 
 The general idea is that for an ensemble, you should create a corresponding

@@ -35,3 +35,5 @@ date                = shell('./hubert-mtime.pl')
 projectName         = "f21_chiral"
 ensembleName        = "l408f21b6260m002025m0810"
 markovChainURI      = makeURI(collaboration,projectName,ensembleName)
+fundingInstitutes   = ["Sneed's","ACME"]
+fundingAwards       = ["Grant 12345","Award No. 54321"] 

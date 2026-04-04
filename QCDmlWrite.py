@@ -7,38 +7,31 @@
 #
 
 
-from QCDmlUtils import xmlWrite
+from QCDmlUtils import xmlWrite, getConfigOptional, getEnsOptional
 import QCDmlGaugeAction as gluonTools
 import QCDmlQuarkAction as quarkTools
 
 
-def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
+def writeQCDmlConfigFile(p, dataLFN, markovChainURI):
+    """
+    Use the profile p, which can be a class or .py file, to create the QCDml file for
+    a config or collection of configs. It is a good idea to run checkConfigProfile on
+    p before calling this method
 
-    """ Use the profile p to generate the QCDml config file.  """
+    Args:
+        p (.py or class): profile 
+        dataLFN (str)
+        markovChainURI (str)
+    """
 
     fout=open(p.QCDmlConfigFileName,'w')
-
-    # Set any missing, optional metadata to None.
-    try:
-        revisions=p.revisions
-    except AttributeError:
-        revisions=None
-    try:
-        reference=p.reference
-    except AttributeError:
-        reference=None
-    try:
-        revisionNumber=p.revisionNumber
-    except AttributeError:
-        revisionNumber=None
-    try:
-        parameterName=p.parameterName
-    except AttributeError:
-        parameterName=None
-    try:
-        parameterValue=p.parameterValue
-    except AttributeError:
-        parameterValue=None
+    
+    opt            = getConfigOptional(p)
+    revisions      = opt['revisions']
+    parameterName  = opt['parameterName']
+    parameterValue = opt['parameterValue']
+    revisionNumber = opt['revisionNumber']
+    reference      = opt['reference']
 
     xmlWrite( fout,'?xml version="1.0" encoding="UTF-8" standalone="yes"?')
     xmlWrite( fout,'gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config2.0"')
@@ -117,7 +110,7 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
         xmlWrite( fout, 'avePlaquette', p.plaquette, indent=8 )
         xmlWrite( fout, '/record', indent=6 )
         xmlWrite( fout, '/markovStep', indent=4 )
-    elif isinstance(p.update,list):
+    elif isinstance(p.update,list): 
         for i in range(len(p.update)):
             xmlWrite( fout, 'markovStep', indent=4 )
             try:
@@ -138,10 +131,21 @@ def writeQCDmlConfigFile(p, dataLFN=None, markovChainURI=None):
 
 
 def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
+    """
+    Use profiles p, gluonProf, and quarkProf to create the QCDml file for the ensemble.
 
-    """ Use the profiles p, gluonProf, and quarkProf to generate the QCDml ensemble file.  """
+    Args:
+        p (.py or class): profile 
+        gluonProf (.py or class): profile for gluon action. Can use one from profiles directory 
+        quarkProf (.py or class): profile for quark action. Can use one from profiles directory
+    """
 
-    fout=open(p.QCDmlEnsembleFileName,'w')
+    fout = open(p.QCDmlEnsembleFileName,'w')
+
+    opt     = getEnsOptional(p)
+    orcid   = opt['orcid']
+    funders = opt['funders']
+    awards  = opt['awards']
 
     xmlWrite( fout, '?xml version="1.0" encoding="UTF-8" standalone="yes"?' )
     xmlWrite( fout, 'markovChain xmlns="http://www.lqcd.org/ildg/QCDml/ensemble2.0"' )
@@ -154,10 +158,8 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
     xmlWrite( fout, 'revisionAction', 'add', indent=8 )
     xmlWrite( fout, 'participant', indent=8 )
-    try:
-        xmlWrite( fout, 'orcid', p.orcid, indent=10 )
-    except AttributeError:
-        pass
+    if orcid is not None: 
+        xmlWrite( fout, 'orcid', orcid, indent=10 )
     xmlWrite( fout, 'name', p.name, indent=10 )
     xmlWrite( fout, 'institution', p.institution, indent=10 )
     xmlWrite( fout, '/participant', indent=8 )
@@ -169,6 +171,21 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     xmlWrite( fout, 'license', indent=2 )
     xmlWrite( fout, 'licenseURI', p.license, indent=4 )
     xmlWrite( fout, '/license', indent=2 )
+
+    if funders is not None: 
+        xmlWrite( fout, 'fundingReferences', indent=2)
+        if isinstance(funders,str):
+            xmlWrite( fout, 'fundingReference', indent=4)
+            xmlWrite( fout, 'funderName', funders, indent=6)
+            xmlWrite( fout, 'awardTitle', awards, indent=6)
+            xmlWrite( fout, '/fundingReference', indent=4)
+        elif isinstance(funders,list): 
+            for i in range(len(funders)):
+                xmlWrite( fout, 'fundingReference', indent=4)
+                xmlWrite( fout, 'funderName', funders[i], indent=6)
+                xmlWrite( fout, 'awardTitle', awards[i], indent=6)
+                xmlWrite( fout, '/fundingReference', indent=4)
+        xmlWrite( fout, '/fundingReferences', indent=2)
 
     xmlWrite( fout, 'physics', indent=2 )
     xmlWrite( fout, 'size', indent=4 )

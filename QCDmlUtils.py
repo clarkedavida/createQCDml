@@ -8,15 +8,16 @@
 
 
 # Some Python 3.5+ standard libraries
-import sys
+import sys, re
 from subprocess import run, PIPE
 from types import ModuleType
 
 
 def shell(*args):
-    """ Carry out the passed arguments args in the shell. Can be passed as a single 
-        string or as a list. Captures and returns output of shell command. E.g.
-            shell('ls -lah') 
+    """ 
+    Carry out the passed arguments args in the shell. Can be passed as a single 
+    string or as a list. Captures and returns output of shell command. E.g.
+        shell('ls -lah') 
     """
     args = [str(s) for s in args]
     process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
@@ -24,14 +25,18 @@ def shell(*args):
 
 
 def verboseShell(*args):
-    """ Same as shell, but display results instead to screen. """
+    """ 
+    Same as shell, but display results instead to screen. 
+    """
     args = [str(s) for s in args]
     process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
     print(process.stdout)
 
 
 def xmlWrite(fileUnit,tag,*args,indent=0):
-    """ Wrapper for writing in xml format. """
+    """ 
+    Wrapper for writing in xml format. 
+    """
     sindent = ' '*indent
     if len(args)==0:
         fileUnit.write(sindent+'<'+tag+'>\n')
@@ -42,14 +47,18 @@ def xmlWrite(fileUnit,tag,*args,indent=0):
 
 
 def QCDmlFail(*args):
-    """ Exit with error code -1. """
+    """ 
+    Exit with error code -1. 
+    """
     args = [str(s) for s in args]
     print('  FAIL: '+(' '.join(args)))
     sys.exit(-1)
 
 
 def QCDmlError(*args) -> bool:
-    """ Print error message and give flag to program that you failed. """ 
+    """ 
+    Print error message and give flag to program that you failed. 
+    """ 
     args = [str(s) for s in args]
     print('  ERROR: '+(' '.join(args)))
     return False 
@@ -70,8 +79,10 @@ def checkEqualLengths(*args) -> bool:
 
 
 def getDateInt(dateString):
-    """ Convert a date into an integer such that later dates are larger
-        than earlier dates. WARNING: Doesn't yet know about time zones. """
+    """ 
+    Convert a date into an integer such that later dates are larger
+    than earlier dates. WARNING: Doesn't yet know about time zones. 
+    """
 
     date  = dateString.split("T")[0]
     time  = dateString.split("T")[1]
@@ -98,37 +109,89 @@ def getDateInt(dateString):
     return dateInt
 
 
-def checkConfigProfile(p):
-    """ Run some checks on the profile p that the metadata makes sense. """
+def getConfigOptional(p) -> dict:
+    """
+    Set any missing, optional metadata for config to None. 
 
-    # Set any missing, optional metadata to None.
+    Args:
+        p (.py or class): profile 
+
+    Returns:
+        dict: optional metadata 
+    """
+    res = {}
     try:
-        revisions=p.revisions
+        res['revisions']=p.revisions
     except AttributeError:
-        revisions=None
+        res['revisions']=None
     try:
-        parameterName=p.parameterName
+        res['parameterName']=p.parameterName
     except AttributeError:
-        parameterName=None
+        res['parameterName']=None
     try:
-        parameterValue=p.parameterValue
+        res['parameterValue']=p.parameterValue
     except AttributeError:
-        parameterValue=None
+        res['parameterValue']=None
     try:
-        revisionNumber=p.revisionNumber
+        res['revisionNumber']=p.revisionNumber
     except AttributeError:
-        revisionNumber=None
+        res['revisionNumber']=None
+    try:
+        res['reference']=p.reference
+    except AttributeError:
+        res['reference']=None
+    return res
+
+
+def getEnsOptional(p) -> dict:
+    """
+    Set any missing, optional metadata for ensemble to None. 
+
+    Args:
+        p (.py or class): profile 
+
+    Returns:
+        dict: optional metadata 
+    """
+    res = {}
+    try:
+        res['orcid']=p.orcid
+    except AttributeError:
+        res['orcid']=None
+    try:
+        res['funders']=p.fundingInstitutes
+    except AttributeError:
+        res['funders']=None
+    try:
+        res['awards']=p.fundingAwards
+    except AttributeError:
+        res['awards']=None
+    return res
+
+
+def checkConfigProfile(p):
+    """ 
+    Run some checks on the profile p that the metadata makes sense. 
+    """
+
+    opt            = getConfigOptional(p)
+    revisions      = opt['revisions']
+    parameterName  = opt['parameterName']
+    parameterValue = opt['parameterValue']
+    revisionNumber = opt['revisionNumber']
 
     lcheck=True
 
     if (not isinstance(p.update,list)) and (not isinstance(p.update,str)):
-        lcheck *= QCDmlError("update must be list or str")
+        lcheck *= QCDmlError("update must be list or str.")
     if isinstance(p.update,list):
         if not isinstance(p.plaquette,list):
-            lcheck *= QCDmlError("update being list enforces plaquette should be list")
+            lcheck *= QCDmlError("update being list enforces plaquette should be list.")
         if not isinstance(p.checksum,list):
-            lcheck *= QCDmlError("update being list enforces checksum should be list")
-        lcheck *= checkEqualLengths( p.update, p.plaquette, p.checksum )
+            lcheck *= QCDmlError("update being list enforces checksum should be list.")
+        if not checkEqualLengths( p.update, p.plaquette, p.checksum ):
+            lcheck *= QCDmlError("update, plaquette, and checksum lists must have same length.")
+
 
     if not p.QCDmlConfigFileName.endswith('.xml'):
         lcheck *= QCDmlError("QCDml config name must end with xml.")
@@ -150,7 +213,7 @@ def checkConfigProfile(p):
         pass
 
     if not p.precision in ["single","double","mixed"]:
-        lcheck *= QCDmlError("Precision ",p.precision,"not allowed!")
+        lcheck *= QCDmlError("Precision ",p.precision,"not allowed! Must be single, double, or mixed.")
 
     if isinstance(p.plaquette,list):    
         for i in range(len(p.plaquette)):
@@ -161,12 +224,12 @@ def checkConfigProfile(p):
             lcheck *= QCDmlError("Detected |plaquette| > 1.0.")
 
     if revisionNumber is not None:
-        numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute), 
-                            len(revisionNumber) )
+        numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute), len(revisionNumber) )
     else:
         numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute) )
 
-    lcheck *= checkEqualLengths(p.revisionAction,p.reviser,p.reviserInstitute,p.revisionNumber)
+    if not checkEqualLengths(p.revisionAction,p.reviser,p.reviserInstitute,p.revisionNumber):
+        lcheck *= QCDmlError("revisionAction, reviser, reviserInstitute, and revisionNumber must have same length.")
 
     if len(p.revisionAction) != numRevisions:
         lcheck *= QCDmlError("Number revision actions != number revisions.")
@@ -209,19 +272,42 @@ def checkConfigProfile(p):
 
 
 def checkEnsembleProfile(p):
-    """ Run some checks on the profile p that the metadata makes sense. """
+    """ 
+    Run some checks on the profile p that the metadata makes sense. 
+    """
 
     lcheck=True
 
+    opt     = getEnsOptional(p)
+    orcid   = opt['orcid']
+    funders = opt['funders']
+    awards  = opt['awards']
+
     # First check some of the required info is there. 
-    if p.license is None:
-        lcheck *= QCDmlError("QCDml ensemble requires a license.")
-    if p.markovChainURI is None:
+    try:
+        p.license
+    except AttributeError: 
+        lcheck *= QCDmlError("QCDml ensemble requires license.")
+    try:
+        p.markovChainURI
+    except AttributeError: 
         lcheck *= QCDmlError("QCDml ensemble requires markovChainURI.")
-    if p.collaboration is None:
+    try:
+        p.collaboration
+    except AttributeError: 
         lcheck *= QCDmlError("QCDml ensemble requires collboration.")
-    if p.projectName is None:
+    try:
+        p.projectName
+    except AttributeError: 
         lcheck *= QCDmlError("QCDml ensemble requires project name.")
+    try:
+        p.size
+    except AttributeError: 
+        lcheck *= QCDmlError("QCDml ensemble requires size.")
+    try:
+        p.QCDmlEnsembleFileName
+    except AttributeError: 
+        lcheck *= QCDmlError("QCDml ensemble requires QCDmlEnsembleFileName.")
 
     if not p.QCDmlEnsembleFileName.endswith('.xml'):
         lcheck *= QCDmlError("QCDml ensemble name must end with xml.")
@@ -235,11 +321,33 @@ def checkEnsembleProfile(p):
         if p.size[direction]<1:
             lcheck *= QCDmlError("Direction",direction,"must be positive.")
 
+    if orcid is not None:
+        if not isinstance(orcid,str):
+            lcheck *= QCDmlError('ORCID must be string.')
+        orcid_pattern = r'^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$'
+        if not re.match(orcid_pattern, orcid):
+            lcheck *= QCDmlError('ORCID must have form XXXX-XXXX-XXXX-XXXX.')
+
+    if (funders is not None) and (awards is None):
+        lcheck *= QCDmlError('Set both fundingInstitutes and fundingAwards or neither.')
+    if (funders is None) and (awards is not None):
+        lcheck *= QCDmlError('Set both fundingInstitutes and fundingAwards or neither.')
+    if funders is not None:
+        if type(funders) != type(awards): 
+            lcheck *= QCDmlError('fundingInstitutes and fundingAwards must both be str or list.')
+        if (not isinstance(funders,str)) and (not isinstance(funders,list)):
+            lcheck *= QCDmlError('fundingInstitutes and fundingAwards must both be str or list.')
+        if (not isinstance(awards,str)) and (not isinstance(awards,list)):
+            lcheck *= QCDmlError('fundingInstitutes and fundingAwards must both be str or list.')
+        if isinstance(funders,list):
+            if not checkEqualLengths(funders,awards):
+                lcheck *= QCDmlError('fundingInstitutes and fundingAwards must have same length.')
+
     if not lcheck:
         QCDmlFail("One or more errors in ensemble profile detected.")
 
 
-def makeURI(*args):
+def makeURI(*args) -> str:
     """ 
     Generate a URI from ensemble information. Example usage:
             makeURI( ensembleInfoFile )
@@ -261,5 +369,9 @@ def makeURI(*args):
             QCDmlFail("Pass either ensemble info or collaboration, project name, and ensemble name.")
 
 
-def makeLFN(collaboration,projectName,ensembleName,confName):
+def makeLFN(collaboration,projectName,ensembleName,confName) -> str:
+    """ 
+    Generate an LFN from ensemble and config information. All LFNs have to have the same structure,
+    and it is convenient if the structure matches the URI. This script enforces that structure.
+    """
     return f"lfn://ldg/{collaboration}/{projectName}/{ensembleName}/{confName}"
