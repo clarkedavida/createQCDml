@@ -3,13 +3,20 @@
 #
 # D. Clarke
 #
-# Methods for writing QCDml metadata files.
+# Methods for writing QCDml metadata files. Requires Python 3.9+.
 #
-
-
-from QCDmlUtils import xmlWrite, getConfigOptional, getEnsOptional
+import xml.etree.ElementTree as ET
+from QCDmlUtils import getConfigOptional, getEnsOptional
 import QCDmlGaugeAction as gluonTools
 import QCDmlQuarkAction as quarkTools
+
+
+def _sub(parent, tag, text=None):
+    """ Create a SubElement, optionally setting its text content. """
+    el = ET.SubElement(parent, tag)
+    if text is not None:
+        el.text = str(text)
+    return el
 
 
 def writeQCDmlConfigFile(p, dataLFN, markovChainURI):
@@ -19,13 +26,11 @@ def writeQCDmlConfigFile(p, dataLFN, markovChainURI):
     p before calling this method
 
     Args:
-        p (.py or class): profile 
+        p (.py or class): profile
         dataLFN (str)
         markovChainURI (str)
     """
 
-    fout=open(p.QCDmlConfigFileName,'w')
-    
     opt            = getConfigOptional(p)
     revisions      = opt['revisions']
     parameterName  = opt['parameterName']
@@ -33,101 +38,82 @@ def writeQCDmlConfigFile(p, dataLFN, markovChainURI):
     revisionNumber = opt['revisionNumber']
     reference      = opt['reference']
 
-    xmlWrite( fout,'?xml version="1.0" encoding="UTF-8" standalone="yes"?')
-    xmlWrite( fout,'gaugeConfiguration xmlns="http://www.lqcd.org/ildg/QCDml/config2.0"')
+    root = ET.Element('gaugeConfiguration')
+    root.set('xmlns', 'http://www.lqcd.org/ildg/QCDml/config2.0')
 
-    if dataLFN is None:
-        xmlWrite( fout, 'dataLFN', p.dataLFN, indent=2 )
-    else:
-        xmlWrite( fout, 'dataLFN', dataLFN, indent=2 )
+    _sub(root, 'dataLFN', p.dataLFN if dataLFN is None else dataLFN)
 
-    xmlWrite( fout, 'management', indent=2 )
+    mgmt = _sub(root, 'management')
     if revisions is not None:
-        xmlWrite( fout, 'revisions', revisions, indent=4 )
+        _sub(mgmt, 'revisions', revisions)
     if reference is not None:
-        xmlWrite( fout, 'reference', reference, indent=4 )
-    xmlWrite( fout, 'archiveHistory', indent=4 )
+        _sub(mgmt, 'reference', reference)
+    history = _sub(mgmt, 'archiveHistory')
     for i in range(len(p.revisionAction)):
-        xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
+        event = _sub(history, 'archiveEvent')
         if revisionNumber is not None:
-            xmlWrite( fout, 'revision', revisionNumber[i], indent=8 )
-        xmlWrite( fout, 'revisionAction', p.revisionAction[i], indent=8 )
-        xmlWrite( fout, 'participant', indent=8)
-        xmlWrite( fout, 'name', p.reviser[i], indent=10 )
-        xmlWrite( fout, 'institution', p.reviserInstitute[i], indent=10 )
-        xmlWrite( fout, '/participant', indent=8 )
-        xmlWrite( fout, 'date', p.revisionDate[i], indent=8 )
-        xmlWrite( fout, '/archiveEvent', indent=6 )
-    xmlWrite( fout, '/archiveHistory', indent=4 )
-    xmlWrite( fout, '/management', indent=2 )
+            _sub(event, 'revision', revisionNumber[i])
+        _sub(event, 'revisionAction', p.revisionAction[i])
+        participant = _sub(event, 'participant')
+        _sub(participant, 'name', p.reviser[i])
+        _sub(participant, 'institution', p.reviserInstitute[i])
+        _sub(event, 'date', p.revisionDate[i])
 
-    xmlWrite( fout, 'implementation', indent=2 )
-    xmlWrite( fout, 'machine', indent=4 )
-    xmlWrite( fout, 'name', p.machineName, indent=6 )
-    xmlWrite( fout, 'institution', p.machineInstitute, indent=6 )
-    xmlWrite( fout, 'machineType', p.machineType, indent=6 )
-    xmlWrite( fout, '/machine', indent=4 )
-    xmlWrite( fout, 'code', indent=4 )
+    impl = _sub(root, 'implementation')
+    machine = _sub(impl, 'machine')
+    _sub(machine, 'name', p.machineName)
+    _sub(machine, 'institution', p.machineInstitute)
+    _sub(machine, 'machineType', p.machineType)
+    code = _sub(impl, 'code')
     try:
-        xmlWrite( fout, 'annotation', p.codeComment, indent=6 )
+        _sub(code, 'annotation', p.codeComment)
     except AttributeError:
         pass
-    xmlWrite( fout, 'name', p.code, indent=6 )
-    xmlWrite( fout, 'version', p.codeVersion, indent=6 )
-    xmlWrite( fout, 'date', p.codeCompileDate, indent=6 )
-    xmlWrite( fout, '/code', indent=4 )
-    xmlWrite( fout, '/implementation', indent=2 )
+    _sub(code, 'name', p.code)
+    _sub(code, 'version', p.codeVersion)
+    _sub(code, 'date', p.codeCompileDate)
 
-    xmlWrite( fout, 'algorithm', indent=2 )
-    xmlWrite( fout, 'parameters', indent=4 )
+    algo = _sub(root, 'algorithm')
+    params = _sub(algo, 'parameters')
     if parameterName is not None:
         for i in range(len(parameterName)):
-            xmlWrite( fout, 'parameter', indent=6 )
-            xmlWrite( fout, 'name', parameterName[i], indent=8)
-            xmlWrite( fout, 'value', parameterValue[i], indent=8)
-            xmlWrite( fout, '/parameter', indent=6 )
-    xmlWrite( fout, '/parameters', indent=4 )
-    xmlWrite( fout, '/algorithm', indent=2 )
-    xmlWrite( fout, 'precision', p.precision, indent=2 )
+            param = _sub(params, 'parameter')
+            _sub(param, 'name', parameterName[i])
+            _sub(param, 'value', parameterValue[i])
 
-    # markovSequence replaces the old top-level markovStep in QCDml 2.0
-    xmlWrite( fout, 'markovSequence', indent=2 )
-    if markovChainURI is None:
-        xmlWrite( fout, 'markovChainURI', p.markovChainURI, indent=4 )
-    else:
-        xmlWrite( fout, 'markovChainURI', markovChainURI, indent=4 )
-    xmlWrite( fout, 'series', p.series, indent=4 )
-    if isinstance(p.update,str):
-        xmlWrite( fout, 'markovStep', indent=4 )
+    _sub(root, 'precision', p.precision)
+
+    markov_seq = _sub(root, 'markovSequence')
+    _sub(markov_seq, 'markovChainURI', p.markovChainURI if markovChainURI is None else markovChainURI)
+    _sub(markov_seq, 'series', p.series)
+
+    if isinstance(p.update, str):
+        step = _sub(markov_seq, 'markovStep')
         try:
-            xmlWrite( fout, 'annotation', p.confComment, indent=6 )
+            _sub(step, 'annotation', p.confComment)
         except AttributeError:
             pass
-        xmlWrite( fout, 'update', p.update, indent=6 )
-        xmlWrite( fout, 'record', indent=6 )
-        xmlWrite( fout, 'field', p.field, indent=8 )
-        xmlWrite( fout, 'crcCheckSum', p.checksum, indent=8 )
-        xmlWrite( fout, 'avePlaquette', p.plaquette, indent=8 )
-        xmlWrite( fout, '/record', indent=6 )
-        xmlWrite( fout, '/markovStep', indent=4 )
-    elif isinstance(p.update,list): 
+        _sub(step, 'update', p.update)
+        record = _sub(step, 'record')
+        _sub(record, 'field', p.field)
+        _sub(record, 'crcCheckSum', p.checksum)
+        _sub(record, 'avePlaquette', p.plaquette)
+    elif isinstance(p.update, list):
         for i in range(len(p.update)):
-            xmlWrite( fout, 'markovStep', indent=4 )
+            step = _sub(markov_seq, 'markovStep')
             try:
-                xmlWrite( fout, 'annotation', p.confComment[i], indent=6 )
+                _sub(step, 'annotation', p.confComment[i])
             except AttributeError:
                 pass
-            xmlWrite( fout, 'update', p.update[i], indent=6 )
-            xmlWrite( fout, 'record', indent=6 )
-            xmlWrite( fout, 'field', p.field, indent=8 )
-            xmlWrite( fout, 'crcCheckSum', p.checksum[i], indent=8 )
-            xmlWrite( fout, 'avePlaquette', p.plaquette[i], indent=8 )
-            xmlWrite( fout, '/record', indent=6 )
-            xmlWrite( fout, '/markovStep', indent=4 )
-    xmlWrite( fout, '/markovSequence', indent=2 )
+            _sub(step, 'update', p.update[i])
+            record = _sub(step, 'record')
+            _sub(record, 'field', p.field)
+            _sub(record, 'crcCheckSum', p.checksum[i])
+            _sub(record, 'avePlaquette', p.plaquette[i])
 
-    xmlWrite( fout, '/gaugeConfiguration' )
-    fout.close()
+    tree = ET.ElementTree(root)
+    ET.indent(tree)
+    tree.write(p.QCDmlConfigFileName, encoding='UTF-8', xml_declaration=True)
 
 
 def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
@@ -135,12 +121,10 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     Use profiles p, gluonProf, and quarkProf to create the QCDml file for the ensemble.
 
     Args:
-        p (.py or class): profile 
-        gluonProf (.py or class): profile for gluon action. Can use one from profiles directory 
+        p (.py or class): profile
+        gluonProf (.py or class): profile for gluon action. Can use one from profiles directory
         quarkProf (.py or class): profile for quark action. Can use one from profiles directory
     """
-
-    fout = open(p.QCDmlEnsembleFileName,'w')
 
     opt      = getEnsOptional(p)
     orcid    = opt['orcid']
@@ -148,109 +132,88 @@ def writeQCDmlEnsembleFile(p, gluonProf, quarkProf):
     awards   = opt['awards']
     awardNos = opt['awardNos']
 
-    xmlWrite( fout, '?xml version="1.0" encoding="UTF-8" standalone="yes"?' )
-    xmlWrite( fout, 'markovChain xmlns="http://www.lqcd.org/ildg/QCDml/ensemble2.0"' )
-    xmlWrite( fout, 'markovChainURI', p.markovChainURI, indent=2 )
+    root = ET.Element('markovChain')
+    root.set('xmlns', 'http://www.lqcd.org/ildg/QCDml/ensemble2.0')
+    _sub(root, 'markovChainURI', p.markovChainURI)
 
-    xmlWrite( fout, 'management', indent=2 )
-    xmlWrite( fout, 'collaboration', p.collaboration, indent=4 )
-    xmlWrite( fout, 'projectName', p.projectName, indent=4 )
-    xmlWrite( fout, 'archiveHistory', indent=4 )
-    xmlWrite( fout, 'archiveEvent', indent=6 )  # renamed from elem in 2.0
-    xmlWrite( fout, 'revisionAction', 'add', indent=8 )
-    xmlWrite( fout, 'participant', indent=8 )
-    if orcid is not None: 
-        xmlWrite( fout, 'orcid', orcid, indent=10 )
-    xmlWrite( fout, 'name', p.name, indent=10 )
-    xmlWrite( fout, 'institution', p.institution, indent=10 )
-    xmlWrite( fout, '/participant', indent=8 )
-    xmlWrite( fout, 'date', p.date, indent=8 )
-    xmlWrite( fout, '/archiveEvent', indent=6 )
-    xmlWrite( fout, '/archiveHistory', indent=4 )
-    xmlWrite( fout, '/management', indent=2 )
+    mgmt = _sub(root, 'management')
+    _sub(mgmt, 'collaboration', p.collaboration)
+    _sub(mgmt, 'projectName', p.projectName)
+    history = _sub(mgmt, 'archiveHistory')
+    event = _sub(history, 'archiveEvent')
+    _sub(event, 'revisionAction', 'add')
+    participant = _sub(event, 'participant')
+    if orcid is not None:
+        _sub(participant, 'orcid', orcid)
+    _sub(participant, 'name', p.name)
+    _sub(participant, 'institution', p.institution)
+    _sub(event, 'date', p.date)
 
-    xmlWrite( fout, 'license', indent=2 )
-    xmlWrite( fout, 'licenseURI', p.license, indent=4 )
-    xmlWrite( fout, '/license', indent=2 )
+    license_el = _sub(root, 'license')
+    _sub(license_el, 'licenseURI', p.license)
 
-    if funders is not None: 
-        xmlWrite( fout, 'fundingReferences', indent=2)
+    if funders is not None:
+        funding = _sub(root, 'fundingReferences')
         for i in range(len(funders)):
-            xmlWrite( fout, 'fundingReference', indent=4)
-            xmlWrite( fout, 'funderName', funders[i], indent=6)
+            ref = _sub(funding, 'fundingReference')
+            _sub(ref, 'funderName', funders[i])
             if awards[i] is not None:
-                xmlWrite( fout, 'awardTitle', awards[i], indent=6)
+                _sub(ref, 'awardTitle', awards[i])
             if awardNos[i] is not None:
-                xmlWrite( fout, 'awardNumber', awardNos[i], indent=6)
-            xmlWrite( fout, '/fundingReference', indent=4)
-        xmlWrite( fout, '/fundingReferences', indent=2)
+                _sub(ref, 'awardNumber', awardNos[i])
 
-    xmlWrite( fout, 'physics', indent=2 )
-    xmlWrite( fout, 'size', indent=4 )
+    physics = _sub(root, 'physics')
+    size_el = _sub(physics, 'size')
     for direction in p.size:
-        xmlWrite( fout, direction, p.size[direction], indent=6 )
-    xmlWrite( fout, '/size', indent=4 )
+        _sub(size_el, direction, p.size[direction])
 
-    xmlWrite( fout, 'action', indent=4 )
+    action_el = _sub(physics, 'action')
 
     #--- Gluon action
-    if gluonProf.actionType=='treelevelSymanzikGluonAction':
-        gluonMD = gluonTools.treeSymanzikAction(fout,gluonProf)
-    else:
-        gluonMD = gluonTools.gluonAction(fout,gluonProf)
-
-    xmlWrite( fout, 'gluon', indent=6 )
-    xmlWrite( fout, gluonProf.actionType, indent=8 )
-    xmlWrite( fout, 'glossary', gluonTools.glossaryDict[gluonProf.actionType], indent=10 )
-    xmlWrite( fout, 'gluonField', indent=10 )
-    xmlWrite( fout, 'gaugeGroup', gluonProf.gaugeGroup, indent=12 )
-    xmlWrite( fout, 'representation', gluonProf.gaugeRepresentation, indent=12 )
-    xmlWrite( fout, 'boundaryCondition', indent=12 )
+    gluon_el      = _sub(action_el, 'gluon')
+    gluon_type_el = _sub(gluon_el, gluonProf.actionType)
+    _sub(gluon_type_el, 'glossary', gluonTools.glossaryDict[gluonProf.actionType])
+    gluon_field = _sub(gluon_type_el, 'gluonField')
+    _sub(gluon_field, 'gaugeGroup', gluonProf.gaugeGroup)
+    _sub(gluon_field, 'representation', gluonProf.gaugeRepresentation)
+    bc_el = _sub(gluon_field, 'boundaryCondition')
     for direction, bc in gluonProf.gaugeBCs.items():
-        xmlWrite( fout, direction, bc, indent=14 )
-    xmlWrite( fout, '/boundaryCondition', indent=12 )
-    xmlWrite( fout, '/gluonField', indent=10 )
-    xmlWrite( fout, 'beta', p.couplings["beta"] , indent=10 )
+        _sub(bc_el, direction, bc)
+    _sub(gluon_type_el, 'beta', p.couplings["beta"])
 
-    gluonMD.writeImprovement()
-
-    xmlWrite( fout, '/'+gluonProf.actionType, indent=8 )
-    xmlWrite( fout, '/gluon', indent=6 )
-    xmlWrite( fout, 'quark', indent=6 )
-
-    if quarkProf.actionType=='hisqQuarkAction':
-        quarkMD = quarkTools.HISQAction(fout,quarkProf)
+    if gluonProf.actionType == 'treelevelSymanzikGluonAction':
+        gluonMD = gluonTools.treeSymanzikAction(gluonProf)
     else:
-        quarkMD = quarkTools.quarkAction(fout,quarkProf)
+        gluonMD = gluonTools.gluonAction(gluonProf)
+    gluonMD.writeImprovement(gluon_type_el)
 
     #--- Quark action
+    quark_el = _sub(action_el, 'quark')
+    if quarkProf.actionType == 'hisqQuarkAction':
+        quarkMD = quarkTools.HISQAction(quarkProf)
+    else:
+        quarkMD = quarkTools.quarkAction(quarkProf)
+
     for f in p.quarks:
-        m_f = "m"+f
-        xmlWrite( fout, quarkProf.actionType, indent=8 )
-        xmlWrite( fout, 'glossary', quarkProf.glossary, indent=10 )
-        xmlWrite( fout, 'quarkField', indent=10 )
-        xmlWrite( fout, 'normalisation', quarkProf.quarkNormalization, indent=12 )
-        xmlWrite( fout, 'boundaryCondition', indent=12 )
+        m_f           = "m" + f
+        quark_type_el = _sub(quark_el, quarkProf.actionType)
+        _sub(quark_type_el, 'glossary', quarkProf.glossary)
+        quark_field = _sub(quark_type_el, 'quarkField')
+        _sub(quark_field, 'normalisation', quarkProf.quarkNormalization)
+        bc_el = _sub(quark_field, 'boundaryCondition')
         for direction, bc in quarkProf.quarkBCs.items():
-            xmlWrite( fout, direction, bc, indent=14 )
-        xmlWrite( fout, '/boundaryCondition', indent=12 )
-        xmlWrite( fout, '/quarkField', indent=10 )
-        xmlWrite( fout, 'numberOfFlavours', p.Nf[f], indent=10 )
-        xmlWrite( fout, 'mass', p.couplings[m_f],indent=10 )
-        quarkMD.writeLinkTreatment()
-        xmlWrite( fout, '/'+quarkProf.actionType, indent=8 )
+            _sub(bc_el, direction, bc)
+        _sub(quark_type_el, 'numberOfFlavours', p.Nf[f])
+        _sub(quark_type_el, 'mass', p.couplings[m_f])
+        quarkMD.writeLinkTreatment(quark_type_el)
 
-    xmlWrite( fout, '/quark', indent=6 )
-    xmlWrite( fout, '/action', indent=4 )
-    xmlWrite( fout, '/physics', indent=2 )
+    algo = _sub(root, 'algorithm')
+    _sub(algo, 'name', quarkProf.algorithm)
+    _sub(algo, 'glossary', quarkTools.algorithmGlossary[quarkProf.algorithm])
+    _sub(algo, 'reference', quarkTools.algorithmReference[quarkProf.algorithm])
+    _sub(algo, 'exact', quarkTools.algorithmExactness[quarkProf.algorithm])
+    _sub(algo, 'reweightingNeeded', quarkTools.algorithmReweightingNeeded[quarkProf.algorithm])
 
-    xmlWrite( fout, 'algorithm', indent=2 )
-    xmlWrite( fout, 'name', quarkProf.algorithm,indent=4 )
-    xmlWrite( fout, 'glossary', quarkTools.algorithmGlossary[quarkProf.algorithm], indent=4 )
-    xmlWrite( fout, 'reference', quarkTools.algorithmReference[quarkProf.algorithm], indent=4 )
-    xmlWrite( fout, 'exact', quarkTools.algorithmExactness[quarkProf.algorithm], indent=4 )
-    xmlWrite( fout, 'reweightingNeeded', quarkTools.algorithmReweightingNeeded[quarkProf.algorithm], indent=4 )
-    xmlWrite( fout, '/algorithm', indent=2 )
-    xmlWrite( fout, '/markovChain' )
-
-    fout.close()
+    tree = ET.ElementTree(root)
+    ET.indent(tree)
+    tree.write(p.QCDmlEnsembleFileName, encoding='UTF-8', xml_declaration=True)

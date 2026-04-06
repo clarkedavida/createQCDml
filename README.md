@@ -3,10 +3,10 @@
 To upload to ILDG, it is expected that you provide some metadata about
 your configurations. There is a strict [QCDml schema](https://doi.org/10.1016/j.nuclphysbps.2004.11.116)
 that should be followed, including a lot of information the user might not know, such as
-the location of a "glossary". One can also find more information about the ILDG specification
-[here](https://gitlab.desy.de/ildg/hands-on/material/-/tree/main/howto?ref_type=heads).
-The purpose of these tools is to allow you
-to write your own Python scripts streamlining this process.
+the location of a "glossary". (One can also find more information about the ILDG specification
+[here](https://gitlab.desy.de/ildg/hands-on/material/-/tree/main/howto?ref_type=heads).)
+These tools are intended to be a lightweight framework to help you write Python
+scripts to easily mark up xml files that comply with QCDml.
 
 The general idea is that for an ensemble, you should create a corresponding
 `ensemble profile`, and similarly configurations get `configuration profiles`.
@@ -28,7 +28,7 @@ only some optional annotations. More may be added later.
 ## Getting set up
 
 This is a collection of Python scripts to help make QCDml metadata files.
-All you need is Python 3.5+. To get started, please run
+All you need is Python 3.9+. To get started, please run
 ```shell
 ./installQCDmlUtils.bash
 ```

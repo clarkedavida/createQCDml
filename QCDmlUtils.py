@@ -5,9 +5,6 @@
 # 
 # Some useful utilities for creating QCDml files. 
 # 
-
-
-# Some Python 3.5+ standard libraries
 import sys, re
 from subprocess import run, PIPE
 from types import ModuleType
@@ -32,18 +29,6 @@ def verboseShell(*args):
     process = run(' '.join(args),shell=True,check=True,stdout=PIPE,universal_newlines=True)
     print(process.stdout)
 
-
-def xmlWrite(fileUnit,tag,*args,indent=0):
-    """ 
-    Wrapper for writing in xml format. 
-    """
-    sindent = ' '*indent
-    if len(args)==0:
-        fileUnit.write(sindent+'<'+tag+'>\n')
-    else:
-        args    = [str(s) for s in args]
-        output  = ' '.join(args)
-        fileUnit.write(sindent+'<'+tag+'>'+output+'</'+tag+'>\n')
 
 
 def QCDmlFail(*args):

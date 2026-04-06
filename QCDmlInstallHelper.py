@@ -5,7 +5,6 @@
 # 
 # Just to help edit the bashrc. 
 # 
-
 import sys
 
 bashrcFile=sys.argv[1]
