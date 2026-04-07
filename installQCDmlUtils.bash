@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 
-# installQCDmlUtils.bash                                                               
+# installQCDmlUtils.bash
 # 
 # D. Clarke 
 # 

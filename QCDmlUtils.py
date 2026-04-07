@@ -188,9 +188,9 @@ def checkConfigProfile(p):
         if not action in ["generate","add","replace","remove"]:
             lcheck *= QCDmlError("Revision action",action,"not allowed!")
 
-    if p.revisionAction[0] != "generate":
+    if len(p.revisionAction) < 1 or p.revisionAction[0] != "generate":
         lcheck *= QCDmlError("First revision action must be 'generate'.")
-    if p.revisionAction[1] != "add":
+    if len(p.revisionAction) < 2 or p.revisionAction[1] != "add":
         lcheck *= QCDmlError("Second revision action must be 'add'.")
 
     try:    
@@ -216,7 +216,7 @@ def checkConfigProfile(p):
     else:
         numRevisions = max( len(p.revisionAction), len(p.reviser), len(p.reviserInstitute) )
 
-    if not checkEqualLengths(p.revisionAction,p.reviser,p.reviserInstitute,p.revisionNumber):
+    if not checkEqualLengths(p.revisionAction,p.reviser,p.reviserInstitute,revisionNumber):
         lcheck *= QCDmlError("revisionAction, reviser, reviserInstitute, and revisionNumber must have same length.")
 
     if len(p.revisionAction) != numRevisions:

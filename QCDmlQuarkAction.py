@@ -48,7 +48,7 @@ class HISQAction(quarkAction):
 #
 algorithmGlossary          = { 'RHMC' : 'https://latticeqcd.github.io/SIMULATeQCD/03_applications/rhmc.html' }
 algorithmReference         = { 'RHMC' : 'Phys. Rev. Lett. 98 (2007) 051601' }
-algorithmExactness         = { 'RHMC' : 'true' }
+algorithmExactness         = { 'RHMC' : 'true' } # Has MH step; considered exact also by KC.
 algorithmReweightingNeeded = { 'RHMC' : 'false' }
 
 #
