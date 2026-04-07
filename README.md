@@ -81,5 +81,5 @@ That's it, you're done! The full example is in `exampleQCDmlUtilScript.py`.
 
 - `example`: Contains examples how to use this code.
 - `glossaries`: Some glossary PDFs from the old ILDG.
-- `profile`: Contains some profiles specific to particular actions.
+- `createQCDml`: Contains main code and profiles for a few specific actions. 
 - `xml`: Contains QCDml2.0 schemata along with a small script for validation.

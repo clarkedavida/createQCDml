@@ -6,9 +6,9 @@
 # Methods for writing QCDml metadata files. Requires Python 3.9+.
 #
 import xml.etree.ElementTree as ET
-from QCDmlUtils import getConfigOptional, getEnsOptional
-import QCDmlGaugeAction as gluonTools
-import QCDmlQuarkAction as quarkTools
+from createQCDml.QCDmlUtils import getConfigOptional, getEnsOptional
+import createQCDml.QCDmlGaugeAction as gluonTools
+import createQCDml.QCDmlQuarkAction as quarkTools
 
 
 def _sub(parent, tag, text=None):

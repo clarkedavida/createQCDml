@@ -8,7 +8,7 @@
 # if you prefer. 
 #
 
-from QCDmlUtils import shell
+from createQCDml.QCDmlUtils import shell
 
 
 QCDmlConfigFileName = "example_config.xml"

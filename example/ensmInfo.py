@@ -7,7 +7,7 @@
 # By the way, you can also structure this as a class inside exampleQCDmlUtilScript
 # if you prefer. 
 #
-from QCDmlUtils import makeURI, shell 
+from createQCDml.QCDmlUtils import makeURI, shell 
 
 QCDmlEnsembleFileName = "example_ensemble.xml"  # This will be the output XML name. 
 

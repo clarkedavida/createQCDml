@@ -11,16 +11,16 @@
 #
 
 # Some ingredients from createQCDml
-from QCDmlUtils import makeURI, makeLFN, checkConfigProfile, checkEnsembleProfile 
-from QCDmlWrite import writeQCDmlConfigFile, writeQCDmlEnsembleFile
+from createQCDml.QCDmlUtils import makeURI, makeLFN, checkConfigProfile, checkEnsembleProfile 
+from createQCDml.QCDmlWrite import writeQCDmlConfigFile, writeQCDmlEnsembleFile
 
 # Your input metadata that aren't related to the action. 
 import ensmInfo as ensmInfo
 import confInfoMulti as confInfo 
 
 # Skeletons for action metadata
-import profiles.treeLevelSymanzikInfo as gActInfo
-import profiles.HISQInfo as qActInfo
+import createQCDml.profiles.treeLevelSymanzikInfo as gActInfo
+import createQCDml.profiles.HISQInfo as qActInfo
 
 # Some basic checks that the supplied data are reasonable.
 checkConfigProfile( confInfo )
