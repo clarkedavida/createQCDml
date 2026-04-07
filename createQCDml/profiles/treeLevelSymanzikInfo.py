@@ -15,7 +15,7 @@ gaugeBCs            = { "x" : "periodic",
                         "z" : "periodic", 
                         "t" : "periodic" }
 
-# beta 10/g2 for us, not 6/g2. 5/3 factored out into the beta?
+# beta 10/g2 for us, not 6/g2: 5/3 factored out into the beta
 normalization = 'c0_is_one'
 symanzikCoeffs = { 'c0' : 1,
                    'c1' : -1/20,
