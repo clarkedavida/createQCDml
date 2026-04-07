@@ -125,6 +125,10 @@ def getConfigOptional(p) -> dict:
         res['reference']=p.reference
     except AttributeError:
         res['reference']=None
+    try:
+        res['sequenceComment']=p.sequenceComment
+    except AttributeError:
+        res['sequenceComment']=None
     return res
 
 

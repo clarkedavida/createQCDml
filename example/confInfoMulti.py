@@ -49,6 +49,7 @@ parameterValue      = ["1","2","3"]
 
 configurationName   = "l408f21b6260m002025m0810a_0.400"
 series              = "0"
+sequenceComment     = "bumbus"
 update              = ["400","500"]
 plaquette           = ["1.0","0.5"]
 checksum            = ["12ec367d","67au998a"]

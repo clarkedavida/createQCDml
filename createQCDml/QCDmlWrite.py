@@ -31,12 +31,13 @@ def writeQCDmlConfigFile(p, dataLFN, markovChainURI):
         markovChainURI (str)
     """
 
-    opt            = getConfigOptional(p)
-    revisions      = opt['revisions']
-    parameterName  = opt['parameterName']
-    parameterValue = opt['parameterValue']
-    revisionNumber = opt['revisionNumber']
-    reference      = opt['reference']
+    opt             = getConfigOptional(p)
+    revisions       = opt['revisions']
+    parameterName   = opt['parameterName']
+    parameterValue  = opt['parameterValue']
+    revisionNumber  = opt['revisionNumber']
+    reference       = opt['reference']
+    sequenceComment = opt['sequenceComment']
 
     root = ET.Element('gaugeConfiguration')
     root.set('xmlns', 'http://www.lqcd.org/ildg/QCDml/config2.0')
@@ -84,6 +85,8 @@ def writeQCDmlConfigFile(p, dataLFN, markovChainURI):
     _sub(root, 'precision', p.precision)
 
     markov_seq = _sub(root, 'markovSequence')
+    if sequenceComment is not None:
+        _sub(markov_seq, 'annotation', sequenceComment)
     _sub(markov_seq, 'markovChainURI', p.markovChainURI if markovChainURI is None else markovChainURI)
     _sub(markov_seq, 'series', p.series)
 
